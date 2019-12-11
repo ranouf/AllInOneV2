@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using AllInOne.Common.Events;
+using Autofac;
 using System.Reflection;
 
 namespace AllInOne.Domain.Core
@@ -12,6 +13,7 @@ namespace AllInOne.Domain.Core
                    .Where(t => t.Name.EndsWith("Manager"))
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
+            builder.RegisterModule<EventsModule>();
         }
     }
 }

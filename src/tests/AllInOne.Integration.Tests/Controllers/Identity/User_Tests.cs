@@ -27,7 +27,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
         {
             TestServerFixture.AuthenticateAsAnonymous();
             var response = await TestServerFixture.Client.GetAsync(
-                Api.V1.User.Url,
+                AllInOne.Common.Constants.Api.V1.User.Url,
                 Output,
                 new PagedRequestDto
                 {
@@ -43,7 +43,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
         {
             await TestServerFixture.AuthenticateAsAdministratorAsync(Output);
             var response = await TestServerFixture.Client.GetAsync(
-                Api.V1.User.Url,
+                AllInOne.Common.Constants.Api.V1.User.Url,
                 Output,
                 new PagedRequestDto
                 {
@@ -68,7 +68,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
 
             // Not Lock
             var response = await TestServerFixture.Client.PutByIdAsync(
-                Api.V1.User.Lock,
+                AllInOne.Common.Constants.Api.V1.User.Lock,
                 Output,
                 dto.CurrentUser
             );
@@ -86,7 +86,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
 
             // Lock User
             var response = await TestServerFixture.Client.PutByIdAsync(
-                Api.V1.User.Lock,
+                AllInOne.Common.Constants.Api.V1.User.Lock,
                 Output,
                 dto.CurrentUser
             );
@@ -105,7 +105,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
 
             // Unlock User
             response = await TestServerFixture.Client.PutByIdAsync(
-                Api.V1.User.Unlock,
+                AllInOne.Common.Constants.Api.V1.User.Unlock,
                 Output,
                 dto.CurrentUser
             );
@@ -128,7 +128,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
 
             // Not Lock
             var response = await TestServerFixture.Client.DeleteAsync(
-                Api.V1.User.Url,
+                AllInOne.Common.Constants.Api.V1.User.Url,
                 Output,
                 dto.CurrentUser
             );
@@ -144,7 +144,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
 
             // Roles
             var response = await TestServerFixture.Client.GetAsync(
-                Api.V1.Role.Url,
+                AllInOne.Common.Constants.Api.V1.Role.Url,
                 Output
             );
             var rolesDto = await response.ConvertToAsync<RoleDto[]>(Output);
@@ -160,7 +160,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
                 RoleId = rolesDto.First(r => r.Name == Domains.Core.Constants.Roles.Administrator).Id
             };
             response = await TestServerFixture.Client.PostAsync(
-                Api.V1.User.Url,
+                AllInOne.Common.Constants.Api.V1.User.Url,
                 Output,
                 newUser
             );
@@ -177,7 +177,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
 
             // Delete User
             response = await TestServerFixture.Client.DeleteAsync(
-                Api.V1.User.Url,
+                AllInOne.Common.Constants.Api.V1.User.Url,
                 Output,
                 dto.CurrentUser
             );

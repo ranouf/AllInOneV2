@@ -1,3 +1,5 @@
+using AllInOne.Api.SignalR;
+using AllInOne.Api.SignalR.Hubs;
 using AllInOne.Common.Authentication.Extensions;
 using AllInOne.Common.Settings.Extensions;
 using AllInOne.Domains.Core.Identity.Configuration;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,6 +66,10 @@ namespace AllInOne.Servers.API
 
             // Authentication
             services.RegisterAuthentication();
+
+            // SignalR
+            services.AddSignalR();
+            services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
             // Insights
             services.AddApplicationInsightsTelemetry(Configuration);
@@ -159,6 +166,10 @@ namespace AllInOne.Servers.API
 
             app.UseEndpoints(endpoints =>
             {
+                // SignalR
+                endpoints.MapHub<BaseHub>("/hub");
+
+                // Controllers
                 endpoints.MapControllers();
             });
 

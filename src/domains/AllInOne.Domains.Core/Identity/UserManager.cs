@@ -1,9 +1,11 @@
 ﻿using AllInOne.Common.EntityFramework.Repositories;
 using AllInOne.Common.EntityFramework.UnitOfWork;
+using AllInOne.Common.Events;
 using AllInOne.Common.Exceptions;
 using AllInOne.Common.Extensions;
 using AllInOne.Common.Paging;
 using AllInOne.Domains.Core.Identity.Entities;
+using AllInOne.Domains.Core.Identity.Events;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,17 +21,20 @@ namespace AllInOne.Domains.Core.Identity
         private readonly IRoleManager _roleManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<User> _userRepository;
+        private readonly IDomainEvents _domainEvents;
 
         public UserManager(
             UserManager<User> userManager,
             IRoleManager roleManager,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            IDomainEvents domainEvents
         )
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _unitOfWork = unitOfWork;
             _userRepository = _unitOfWork.GetRepository<User>();
+            _domainEvents = domainEvents;
         }
 
         public Task<User> FindByIdAsync(Guid id, bool includeDeleted = false)
@@ -63,12 +68,18 @@ namespace AllInOne.Domains.Core.Identity
         {
             var role = await _roleManager.FindByNameAsync(Constants.Roles.User);
             var result = await CreateAsync(user, password, role);
+            await _domainEvents.RaiseAsync(
+                new UserRegisteredEvent { User = result }
+            );
             return result;
         }
 
         public async Task<User> CreateAsync(User user, string password, Role role, bool sendEmail = true, bool raiseEvent = true)
         {
             var result = await CreateAsync(user, password, role);
+            await _domainEvents.RaiseAsync(
+                new UserCreatedEvent { User = result }
+            );
             return result;
         }
 
@@ -80,6 +91,12 @@ namespace AllInOne.Domains.Core.Identity
             {
                 throw new LocalException(identityResult.Errors.First().Description);
             }
+
+            var userToDelete = await FindByIdAsync(user.Id, includeDeleted: true);
+
+            await _domainEvents.RaiseAsync(
+                new UserDeletedEvent { User = userToDelete }
+            );
         }
 
         public async Task AllowUserToLoginAsync(User user, bool allow)
@@ -90,14 +107,25 @@ namespace AllInOne.Domains.Core.Identity
                 throw new LocalException(identityResult.Errors.First().Description);
             }
 
-            if (!allow)
+            IEvent @event;
+
+            if (allow)
+            {
+                user = await FindByIdAsync(user.Id);
+                @event = new UserUnlockedEvent { User = user };
+            }
+            else
             {
                 identityResult = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
                 if (!identityResult.Succeeded)
                 {
                     throw new LocalException(identityResult.Errors.First().Description);
                 }
+
+                user = await FindByIdAsync(user.Id);
+                @event = new UserLockedEvent { User = user };
             }
+            await _domainEvents.RaiseAsync(@event);
         }
 
         public Task<bool> CheckPasswordAsync(User user, string password)
@@ -124,6 +152,9 @@ namespace AllInOne.Domains.Core.Identity
                 throw new LocalException(identityResult.Errors.First().Description);
             }
             var result = await FindByIdAsync(user.Id);
+            await _domainEvents.RaiseAsync(
+                new UserUpdatedEvent { User = result }
+            );
 
             return result;
         }

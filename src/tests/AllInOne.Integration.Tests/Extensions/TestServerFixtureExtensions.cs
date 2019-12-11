@@ -1,12 +1,11 @@
-﻿using AllInOne.Servers.API.Controllers.Identity.Dtos;
-using AllInOne.Integration.Tests.Data;
+﻿using AllInOne.Integration.Tests.Data;
+using AllInOne.Servers.API.Controllers.Identity.Dtos;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
-using static AllInOne.Common.Constants;
 
 namespace AllInOne.Integration.Tests.Extensions
 {
@@ -43,8 +42,8 @@ namespace AllInOne.Integration.Tests.Extensions
         {
             var requestData = new LoginRequestDto { Email = email, Password = password };
             var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
-            output.WriteLine($"METHOD POST, url:'{Api.V1.Authentication.Login}' dto:'{requestData.ToJson()}'");
-            return testServerFixture.Client.PostAsync(Api.V1.Authentication.Login, content);
+            output.WriteLine($"METHOD POST, url:'{AllInOne.Common.Constants.Api.V1.Authentication.Login}' dto:'{requestData.ToJson()}'");
+            return testServerFixture.Client.PostAsync(AllInOne.Common.Constants.Api.V1.Authentication.Login, content);
         }
 
         public static void AuthenticateAsAnonymous(this TestServerFixture testServerFixture)

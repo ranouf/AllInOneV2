@@ -12,12 +12,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\common\AllInOne.Common.Entities\AllInOne.Common.Entities.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common.EntityFramework\AllInOne.Common.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\common\AllInOne.Common.Events\AllInOne.Common.Events.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common.Exceptions\AllInOne.Common.Exceptions.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common.Paging\AllInOne.Common.Paging.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Identity\Events\" />
   </ItemGroup>
 
 </Project>
