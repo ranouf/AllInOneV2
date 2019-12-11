@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\AllInOne.Common.Entities\AllInOne.Common.Entities.csproj" />
+    <ProjectReference Include="..\..\common\AllInOne.Common.EntityFramework\AllInOne.Common.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\common\AllInOne.Common.Exceptions\AllInOne.Common.Exceptions.csproj" />
+    <ProjectReference Include="..\..\common\AllInOne.Common.Paging\AllInOne.Common.Paging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Identity\Events\" />
+  </ItemGroup>
+
+</Project>
