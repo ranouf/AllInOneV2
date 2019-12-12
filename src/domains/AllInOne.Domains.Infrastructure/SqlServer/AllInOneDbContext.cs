@@ -21,16 +21,12 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
         protected Guid? UserId { get; set; }
 
 
-        public AllInOneDbContext()
-        {
-        }
+        public AllInOneDbContext() { }
 
-        public AllInOneDbContext(DbContextOptions options) : base(options)
-        {
-        }
+        public AllInOneDbContext(DbContextOptions<AllInOneDbContext> options) : base(options) { }
 
         public AllInOneDbContext(
-            DbContextOptions options, 
+            DbContextOptions<AllInOneDbContext> options,
             IUserSession session,
             IDomainEvents domainEvents
         ) : base(options)
@@ -50,7 +46,6 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
             base.OnModelCreating(builder);
             PrepareIdentityModel(builder);
         }
-
 
         private void PrepareIdentityModel(ModelBuilder builder)
         {

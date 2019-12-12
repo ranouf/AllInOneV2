@@ -11,10 +11,10 @@ namespace AllInOne.Servers.API.Controllers
     [ApiController]
     public abstract class AuthentifiedBaseController : BaseController
     {
-        public readonly IUserManager _userManager;
+        internal readonly IUserManager _userManager;
         private User _currentUser;
-        public IUserSession Session { get; set; }
-        public async Task<User> GetCurrentUserAsync()
+        internal IUserSession Session { get; set; }
+        internal async Task<User> GetCurrentUserAsync()
         {
             if (_currentUser == null && Session.UserId.HasValue)
             {
