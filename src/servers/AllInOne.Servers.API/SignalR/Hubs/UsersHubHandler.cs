@@ -5,12 +5,16 @@ using AllInOne.Servers.API.Controllers.Identity.Dtos;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Threading.Tasks;
 
 namespace AllInOne.Api.SignalR.Hubs
 {
     public class UsersHubHandler :
         BaseHubHandler<BaseHub>,
+        IEventHandler<UserRegisteredEvent>,
         IEventHandler<UserCreatedEvent>,
+        IEventHandler<UserLockedEvent>,
+        IEventHandler<UserUnlockedEvent>,
         IEventHandler<UserUpdatedEvent>,
         IEventHandler<UserDeletedEvent>
     {
@@ -22,29 +26,34 @@ namespace AllInOne.Api.SignalR.Hubs
         {
         }
 
-        public void Handle(UserCreatedEvent args)
+        public async Task HandleAsync(UserRegisteredEvent args)
         {
-            SendNotification<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
         }
 
-        public void Handle(UserUpdatedEvent args)
+        public async Task HandleAsync(UserCreatedEvent args)
         {
-            SendNotification<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
         }
 
-        public void Handle(UserLockedEvent args)
+        public async Task HandleAsync(UserUpdatedEvent args)
         {
-            SendNotification<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
         }
 
-        public void Handle(UserUnlockedEvent args)
+        public async Task HandleAsync(UserLockedEvent args)
         {
-            SendNotification<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
         }
 
-        public void Handle(UserDeletedEvent args)
+        public async Task HandleAsync(UserUnlockedEvent args)
         {
-            SendNotification<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+        }
+
+        public async Task HandleAsync(UserDeletedEvent args)
+        {
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
         }
     }
 }

@@ -3,6 +3,7 @@ using AllInOne.Common.EntityFramework.UnitOfWork;
 using AllInOne.Common.Events;
 using AllInOne.Common.Exceptions;
 using AllInOne.Common.Extensions;
+using AllInOne.Common.Logging;
 using AllInOne.Common.Paging;
 using AllInOne.Domains.Core.Identity.Entities;
 using AllInOne.Domains.Core.Identity.Events;
@@ -22,12 +23,14 @@ namespace AllInOne.Domains.Core.Identity
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<User> _userRepository;
         private readonly IDomainEvents _domainEvents;
+        private readonly ILoggerService<UserManager> _logger;
 
         public UserManager(
             UserManager<User> userManager,
             IRoleManager roleManager,
             IUnitOfWork unitOfWork,
-            IDomainEvents domainEvents
+            IDomainEvents domainEvents,
+            ILoggerService<UserManager> logger
         )
         {
             _userManager = userManager;
@@ -35,6 +38,7 @@ namespace AllInOne.Domains.Core.Identity
             _unitOfWork = unitOfWork;
             _userRepository = _unitOfWork.GetRepository<User>();
             _domainEvents = domainEvents;
+            _logger = logger;
         }
 
         public Task<User> FindByIdAsync(Guid id, bool includeDeleted = false)
@@ -77,9 +81,13 @@ namespace AllInOne.Domains.Core.Identity
         public async Task<User> CreateAsync(User user, string password, Role role, bool sendEmail = true, bool raiseEvent = true)
         {
             var result = await CreateAsync(user, password, role);
-            await _domainEvents.RaiseAsync(
-                new UserCreatedEvent { User = result }
-            );
+
+            if (raiseEvent)
+            {
+                await _domainEvents.RaiseAsync(
+                    new UserCreatedEvent { User = result }
+                );
+            }
             return result;
         }
 
@@ -99,7 +107,7 @@ namespace AllInOne.Domains.Core.Identity
             );
         }
 
-        public async Task AllowUserToLoginAsync(User user, bool allow)
+        public async Task AllowUserToLoginAsync(User user, bool allow, bool raiseEvent = true)
         {
             var identityResult = await _userManager.SetLockoutEnabledAsync(user, !allow);
             if (!identityResult.Succeeded)
@@ -125,7 +133,10 @@ namespace AllInOne.Domains.Core.Identity
                 user = await FindByIdAsync(user.Id);
                 @event = new UserLockedEvent { User = user };
             }
-            await _domainEvents.RaiseAsync(@event);
+            if (raiseEvent)
+            {
+                await _domainEvents.RaiseAsync(@event);
+            }
         }
 
         public Task<bool> CheckPasswordAsync(User user, string password)
@@ -151,18 +162,22 @@ namespace AllInOne.Domains.Core.Identity
             {
                 throw new LocalException(identityResult.Errors.First().Description);
             }
+
             var result = await FindByIdAsync(user.Id);
-            await _domainEvents.RaiseAsync(
-                new UserUpdatedEvent { User = result }
-            );
+            if (raiseEvent)
+            {
+                await _domainEvents.RaiseAsync(
+                    new UserUpdatedEvent { User = result }
+                );
+            }
 
             return result;
         }
 
         #region Private
-        private Task<User> FindBy(Expression<Func<User, bool>> where, bool includeDeleted)
+        private async Task<User> FindBy(Expression<Func<User, bool>> where, bool includeDeleted)
         {
-            return _userRepository.GetAll()
+            var result = await _userRepository.GetAll()
                 .Include(u => u.CreatedByUser)
                 .Include(u => u.UpdatedByUser)
                 .Include(u => u.DeletedByUser)
@@ -170,6 +185,8 @@ namespace AllInOne.Domains.Core.Identity
                 .ThenInclude(u => u.Role)
                 .IgnoreQueryFilters(includeDeleted)
                 .FirstOrDefaultAsync(where);
+            _logger.LogInformation($"User found: {result.ToJson()}");
+            return result;
         }
 
         private async Task<User> CreateAsync(User user, string password, Role role)
@@ -182,7 +199,7 @@ namespace AllInOne.Domains.Core.Identity
 
             user = await _userManager.FindByEmailAsync(user.Email);
 
-            await AllowUserToLoginAsync(user, true);
+            await AllowUserToLoginAsync(user, allow: true, raiseEvent: false);
 
             identityResult = await _userManager.AddToRoleAsync(user, role.Name);
             if (!identityResult.Succeeded)

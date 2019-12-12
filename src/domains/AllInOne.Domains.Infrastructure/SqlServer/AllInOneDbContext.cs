@@ -1,4 +1,5 @@
 ﻿using AllInOne.Common.Entities;
+using AllInOne.Common.Events;
 using AllInOne.Common.Extensions;
 using AllInOne.Common.Session;
 using AllInOne.Domains.Core.Identity.Entities;
@@ -15,7 +16,8 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
 {
     public class AllInOneDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClaim<Guid>, UserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
     {
-        public IUserSession Session { get; private set; }
+        private readonly IDomainEvents _domainEvents;
+        public IUserSession _session { get; private set; }
         protected Guid? UserId { get; set; }
 
 
@@ -27,9 +29,14 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
         {
         }
 
-        public AllInOneDbContext(DbContextOptions options, IUserSession session) : base(options)
+        public AllInOneDbContext(
+            DbContextOptions options, 
+            IUserSession session,
+            IDomainEvents domainEvents
+        ) : base(options)
         {
-            Session = session;
+            _session = session;
+            _domainEvents = domainEvents;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -85,9 +92,9 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            if (Session.UserId.HasValue)
+            if (_session.UserId.HasValue)
             {
-                var user = Users.FirstOrDefault(u => u.Id == Session.UserId.Value);
+                var user = Users.FirstOrDefault(u => u.Id == _session.UserId.Value);
                 if (user != null)
                 {
                     UserId = user.Id;

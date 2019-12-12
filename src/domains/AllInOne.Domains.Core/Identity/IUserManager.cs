@@ -7,7 +7,7 @@ namespace AllInOne.Domains.Core.Identity
 {
     public interface IUserManager
     {
-        Task AllowUserToLoginAsync(User user, bool allow);
+        Task AllowUserToLoginAsync(User user, bool allow, bool raiseEvent = true);
         Task<User> FindByIdAsync(Guid id, bool includeDeleted = false);
         Task<User> FindByEmailAsync(string email, bool includeDeleted = false);
         Task<PagedResult<User>> GetAllAsync(string filter, int? maxResultCount, int? SkipCount);

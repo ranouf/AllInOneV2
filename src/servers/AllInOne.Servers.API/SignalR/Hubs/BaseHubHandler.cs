@@ -6,6 +6,7 @@ using AllInOne.Servers.API.Controllers.Dtos.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Threading.Tasks;
 
 namespace AllInOne.Api.SignalR.Hubs
 {
@@ -27,7 +28,7 @@ namespace AllInOne.Api.SignalR.Hubs
             _mapper = mapper;
         }
 
-        public void SendNotification<TPrimaryKeyDto, TSource, TDestination>(
+        public async Task SendNotificationAsync<TPrimaryKeyDto, TSource, TDestination>(
             IEvent @event,
             TSource source,
             string label
@@ -43,9 +44,8 @@ namespace AllInOne.Api.SignalR.Hubs
             )
             {
                 var result = _connectionService.GetAllExcept($"{deletedByUserId.Value}");
-                _connectionManager.Clients.Clients(result)
-                    .SendAsync(@event.Action, dto)
-                    .Wait();
+                await _connectionManager.Clients.Clients(result)
+                    .SendAsync(@event.Action, dto)                    ;
             }
             else if (source.IsAssignableToGenericType(typeof(IUpdateAudited<>))
                && source.TryGetPropertyValue<Guid?>("UpdatedByUserId", out var updatedByUserId)
@@ -53,9 +53,8 @@ namespace AllInOne.Api.SignalR.Hubs
            )
             {
                 var result = _connectionService.GetAllExcept($"{updatedByUserId.Value}");
-                _connectionManager.Clients.Clients(result)
-                    .SendAsync(@event.Action, dto)
-                    .Wait();
+                await _connectionManager.Clients.Clients(result)
+                    .SendAsync(@event.Action, dto)                    ;
             }
             else if (source.IsAssignableToGenericType(typeof(ICreationAudited<>))
                 && source.TryGetPropertyValue<Guid?>("CreatedByUserId", out var createdByUserId)
@@ -63,15 +62,13 @@ namespace AllInOne.Api.SignalR.Hubs
             )
             {
                 var result = _connectionService.GetAllExcept($"{createdByUserId.Value}");
-                _connectionManager.Clients.Clients(result)
-                    .SendAsync(@event.Action, dto)
-                    .Wait();
+                await _connectionManager.Clients.Clients(result)
+                    .SendAsync(@event.Action, dto)                    ;
             }
             else
             {
-                _connectionManager.Clients.All
-                    .SendAsync(@event.Action, dto)
-                    .Wait();
+                await _connectionManager.Clients.All
+                    .SendAsync(@event.Action, dto)                    ;
             }
         }
     }

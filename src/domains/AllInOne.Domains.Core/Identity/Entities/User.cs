@@ -33,7 +33,7 @@ namespace AllInOne.Domains.Core.Identity.Entities
         {
             get
             {
-                return UserRoles?.First()?.Role.Name;
+                return UserRoles?.FirstOrDefault()?.Role?.Name;
             }
         }
 

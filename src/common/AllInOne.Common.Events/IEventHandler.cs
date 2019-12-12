@@ -1,7 +1,9 @@
-﻿namespace AllInOne.Common.Events
+﻿using System.Threading.Tasks;
+
+namespace AllInOne.Common.Events
 {
     public interface IEventHandler<T> where T : IEvent
     {
-        void Handle(T args);
+        Task HandleAsync(T args);
     }
 }
