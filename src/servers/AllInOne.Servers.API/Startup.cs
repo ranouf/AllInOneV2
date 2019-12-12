@@ -5,12 +5,15 @@ using AllInOne.Common.Settings.Extensions;
 using AllInOne.Domains.Core.Identity.Configuration;
 using AllInOne.Domains.Core.Identity.Entities;
 using AllInOne.Domains.Infrastructure.SqlServer;
+using AllInOne.Servers.API.Configuration;
 using AllInOne.Servers.API.Filters;
 using AllInOne.Servers.API.Middlewares;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -115,6 +118,24 @@ namespace AllInOne.Servers.API
             });
             services.AddSwaggerDocument();
 
+            // HealthCheck
+            services.AddHealthChecksUI(setupSettings: options =>
+            {
+                var settings = HealthCheckSettings.FromConfiguration(Configuration);
+                if (settings != null)
+                {
+                    options.AddHealthCheckEndpoint(
+                        settings.Name,
+                        settings.Uri
+                    );
+                    options.SetHealthCheckDatabaseConnectionString(settings.HealthCheckDatabaseConnectionString);
+                    options.SetEvaluationTimeInSeconds(settings.EvaluationTimeinSeconds);
+                    options.SetMinimumSecondsBetweenFailureNotifications(settings.MinimumSecondsBetweenFailureNotifications);
+                }
+            });
+            services.AddHealthChecks()
+                .AddDbContextCheck<AllInOneDbContext>("Default");
+
             // Profiling
             services.AddMemoryCache();
             services.AddMiniProfiler(options =>
@@ -163,6 +184,18 @@ namespace AllInOne.Servers.API
             // Profiling, url to see last profile check: http://localhost:XXXX/profiler/results
             app.UseMiniProfiler();
             app.UseMiddleware<RequestMiddleware>();
+
+            // HealthCheck
+            app.UseHealthChecks("/healthchecks", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+            app.UseHealthChecksUI(config =>
+            {
+                config.UIPath = "/api-healthchecks";
+                config.AddCustomStylesheet("Assets/HealthCheck.css");
+            });
 
             app.UseEndpoints(endpoints =>
             {
