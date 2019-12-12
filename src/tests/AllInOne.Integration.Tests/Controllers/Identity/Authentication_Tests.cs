@@ -28,7 +28,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
 
             // Register 
             var response = await TestServerFixture.Client.PostAsync(
-                Api.V1.Authentication.Register,
+                AllInOne.Common.Constants.Api.V1.Authentication.Register,
                 Output,
                 new RegistrationRequestDto
                 {
@@ -54,7 +54,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
 
             // Delete User
             response = await TestServerFixture.Client.DeleteAsync(
-                Api.V1.User.Url,
+                AllInOne.Common.Constants.Api.V1.User.Url,
                 Output,
                 dto.CurrentUser
             );

@@ -1,12 +1,10 @@
-﻿using AllInOne.Domains.Core.Identity;
-using AllInOne.Integration.Tests.Data;
+﻿using AllInOne.Integration.Tests.Data;
 using AllInOne.Integration.Tests.Extensions;
 using AllInOne.Servers.API.Controllers.Identity.Dtos;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using static AllInOne.Common.Constants;
 
 namespace AllInOne.Integration.Tests.Controllers.Identity
 {
@@ -27,7 +25,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
         {
             await TestServerFixture.AuthenticateAsAdministratorAsync(Output);
             var response = await TestServerFixture.Client.PutAsync(
-                Api.V1.Account.Password,
+                AllInOne.Common.Constants.Api.V1.Account.Password,
                 Output,
                 new ChangePasswordRequestDto
                 {
@@ -46,7 +44,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             response = await TestServerFixture.Client.PutAsync(
-                Api.V1.Account.Password,
+                AllInOne.Common.Constants.Api.V1.Account.Password,
                 Output,
                 new ChangePasswordRequestDto
                 {
@@ -70,7 +68,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
         {
             await TestServerFixture.AuthenticateAsAdministratorAsync(Output);
             var response = await TestServerFixture.Client.PutAsync(
-                Api.V1.Account.Profile,
+                AllInOne.Common.Constants.Api.V1.Account.Profile,
                 Output,
                 new ChangeProfileRequestDto
                 {
@@ -86,7 +84,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
             Assert.Equal(NewLastname, dto.Lastname);
 
             response = await TestServerFixture.Client.PutAsync(
-                Api.V1.Account.Profile,
+                AllInOne.Common.Constants.Api.V1.Account.Profile,
                 Output,
                 new ChangeProfileRequestDto
                 {
@@ -102,7 +100,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
         {
             await TestServerFixture.AuthenticateAsAdministratorAsync(Output);
             var response = await TestServerFixture.Client.GetAsync(
-                Api.V1.Account.Profile,
+                AllInOne.Common.Constants.Api.V1.Account.Profile,
                 Output
             );
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

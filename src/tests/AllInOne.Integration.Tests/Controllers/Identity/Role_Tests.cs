@@ -6,7 +6,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using static AllInOne.Common.Constants;
 
 namespace AllInOne.Integration.Tests.Controllers.Identity
 {
@@ -23,7 +22,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
         {
             await TestServerFixture.AuthenticateAsAdministratorAsync(Output);
             var response = await TestServerFixture.Client.GetAsync(
-                Api.V1.Role.Url,
+                Common.Constants.Api.V1.Role.Url,
                 Output
             );
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
