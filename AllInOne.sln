@@ -9,25 +9,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "servers", "servers", "{75B2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "client", "client", "{95121DCD-D694-4ECA-8198-0DB2DB0E7509}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "client", ".\src\client\", "{208B17BC-CA88-4D86-9E5A-F30A516FDA21}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "client", "src\client\", "{208B17BC-CA88-4D86-9E5A-F30A516FDA21}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_22436"
-		Debug.AspNetCompiler.PhysicalPath = ".\src\client\"
+		Debug.AspNetCompiler.PhysicalPath = "src\client\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_22436\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.VirtualPath = "/localhost_22436"
-		Release.AspNetCompiler.PhysicalPath = ".\src\client\"
+		Release.AspNetCompiler.PhysicalPath = "src\client\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_22436\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "22436"
-		SlnRelativePath = ".\src\client\"
+		SlnRelativePath = "src\client\"
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "domains", "domains", "{986F0E35-6AF0-4D72-BDA5-37083449DEEF}"
@@ -71,10 +71,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1F4A21C9-3BA9-4909-AA0D-8491502F9575}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		api.config.nswag = api.config.nswag
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllInOne.Common.Events", "src\common\AllInOne.Common.Events\AllInOne.Common.Events.csproj", "{68E96EF0-8545-4EFD-B48B-DD17CA419AF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllInOne.Common.Events", "src\common\AllInOne.Common.Events\AllInOne.Common.Events.csproj", "{68E96EF0-8545-4EFD-B48B-DD17CA419AF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

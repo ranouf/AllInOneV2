@@ -7,6 +7,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularModule } from './modules/angular.module';
 import { CovalentModule } from './modules/covalent.module';
 import { AngularMaterialModule } from './modules/angular-material.module';
+import { AuthenticationService } from './services/api/api.services';
+import { ServiceBaseConfiguration, ServiceBase } from './services/api/api.services.base';
 
 @NgModule({
   declarations: [
@@ -18,9 +20,13 @@ import { AngularMaterialModule } from './modules/angular-material.module';
     CovalentModule,
     AngularMaterialModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
   ],
-  providers: [],
+  providers: [
+    AuthenticationService,
+    ServiceBaseConfiguration,
+    ServiceBase,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
