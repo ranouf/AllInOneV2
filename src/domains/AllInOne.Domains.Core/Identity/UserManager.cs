@@ -43,12 +43,30 @@ namespace AllInOne.Domains.Core.Identity
 
         public Task<User> FindByIdAsync(Guid id, bool includeDeleted = false)
         {
-            return FindBy(u => u.Id == id, includeDeleted);
+            var result = FindBy(u => u.Id == id, includeDeleted);
+            if (result != null)
+            {
+                _logger.LogInformation($"User found: {result.ToJson()}");
+            }
+            else
+            {
+                _logger.LogInformation($"User not found with id: {id}");
+            }
+            return result;
         }
 
         public Task<User> FindByEmailAsync(string email, bool includeDeleted = false)
         {
-            return FindBy(u => u.Email == email, includeDeleted);
+            var result = FindBy(u => u.Email == email, includeDeleted);
+            if (result != null)
+            {
+                _logger.LogInformation($"User found: {result.ToJson()}");
+            }
+            else
+            {
+                _logger.LogInformation($"User not found with email: {email}");
+            }
+            return result;
         }
 
         public Task<PagedResult<User>> GetAllAsync(string filter, int? maxResultCount, int? SkipCount)
@@ -185,7 +203,6 @@ namespace AllInOne.Domains.Core.Identity
                 .ThenInclude(u => u.Role)
                 .IgnoreQueryFilters(includeDeleted)
                 .FirstOrDefaultAsync(where);
-            _logger.LogInformation($"User found: {result.ToJson()}");
             return result;
         }
 
