@@ -1,0 +1,26 @@
+<td-layout-manage-list #manageList
+                       [opened]="media.registerQuery('gt-sm') | async"
+                       [mode]="(media.registerQuery('gt-sm') | async) ? 'side' :  'over'"
+                       [sidenavWidth]="(media.registerQuery('gt-xs') | async) ? '257px' : '100%'">
+  <mat-toolbar td-sidenav-content><span>My Account</span></mat-toolbar>
+  <mat-nav-list td-sidenav-content [tdLayoutNavListClose]="!media.query('gt-sm')">
+    <a mat-list-item [routerLink]="['/private/myaccount/profile']" [tdLayoutManageListToggle]="!(media.registerQuery('gt-sm') | async)">
+      <mat-icon matListAvatar>account_circle</mat-icon>
+      <h3 matLine> Profile </h3>
+      <p matLine> Update my profile </p>
+    </a>
+    <a mat-list-item [routerLink]="['/private/myaccount/password']" [tdLayoutManageListToggle]="!(media.registerQuery('gt-sm') | async)">
+      <mat-icon matListAvatar>vpn_key</mat-icon>
+      <h3 matLine> Password </h3>
+      <p matLine> Change my password </p>
+    </a>
+  </mat-nav-list>
+  <mat-toolbar>
+    <button mat-button tdLayoutManageListToggle [hideWhenOpened]="true">
+      <mat-icon matListAvatar>keyboard_arrow_right</mat-icon>
+    </button>
+    {{manageList | log}}
+    <span *ngIf="!manageList.opened">My Account</span>
+  </mat-toolbar>
+  <router-outlet></router-outlet>
+</td-layout-manage-list>

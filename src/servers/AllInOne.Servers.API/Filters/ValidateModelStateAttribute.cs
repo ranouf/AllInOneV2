@@ -6,7 +6,7 @@ using System.Linq;
 namespace AllInOne.Servers.API.Filters
 {
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
-    public class ValidateModelStateAttribute : ActionFilterAttribute
+    public sealed class ValidateModelStateAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {

@@ -24,8 +24,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
           IUserSession session,
           ILogger<AccountController> logger
         ) : base(session, userManager, mapper, logger)
-        {
-        }
+        { }
 
         [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -43,7 +42,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
         }
 
         [HttpPut]
-        [ProducesResponseType(typeof(ProfileResponseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(UserDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.InternalServerError)]
@@ -56,11 +55,11 @@ namespace AllInOne.Servers.API.Controllers.Identity
             var result = await GetCurrentUserAsync();
             result.Update(dto.Firstname, dto.Lastname);
             result = await _userManager.UpdateAsync(result);
-            return new ObjectResult(Mapper.Map<User, ProfileResponseDto>(result));
+            return new ObjectResult(Mapper.Map<User, UserDto>(result));
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(ProfileResponseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(UserDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.InternalServerError)]
@@ -71,7 +70,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
             var currentUser = await GetCurrentUserAsync();
             Logger.LogInformation(nameof(GetProfileAsync), currentUser);
             var result = await _userManager.FindByIdAsync(currentUser.Id);
-            return new ObjectResult(Mapper.Map<User, ProfileResponseDto>(result));
+            return new ObjectResult(Mapper.Map<User, UserDto>(result));
         }
     }
 }

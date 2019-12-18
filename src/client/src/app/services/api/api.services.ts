@@ -98,7 +98,7 @@ export class AccountService extends ServiceBase {
         return _observableOf<void>(<any>null);
     }
 
-    updateProfile(dto: ChangeProfileRequestDto): Observable<ProfileResponseDto> {
+    updateProfile(dto: ChangeProfileRequestDto): Observable<UserDto> {
         let url_ = this.baseUrl + "/api/v1/account/profile";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -124,14 +124,14 @@ export class AccountService extends ServiceBase {
                 try {
                     return this.transformResult(url_, response_, (r) => this.processUpdateProfile(<any>r));
                 } catch (e) {
-                    return <Observable<ProfileResponseDto>><any>_observableThrow(e);
+                    return <Observable<UserDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<ProfileResponseDto>><any>_observableThrow(response_);
+                return <Observable<UserDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processUpdateProfile(response: HttpResponseBase): Observable<ProfileResponseDto> {
+    protected processUpdateProfile(response: HttpResponseBase): Observable<UserDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -141,7 +141,7 @@ export class AccountService extends ServiceBase {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : <ProfileResponseDto>JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = _responseText === "" ? null : <UserDto>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
             }));
         } else if (status === 401) {
@@ -167,10 +167,10 @@ export class AccountService extends ServiceBase {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ProfileResponseDto>(<any>null);
+        return _observableOf<UserDto>(<any>null);
     }
 
-    getProfile(): Observable<ProfileResponseDto> {
+    getProfile(): Observable<UserDto> {
         let url_ = this.baseUrl + "/api/v1/account/profile";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -192,14 +192,14 @@ export class AccountService extends ServiceBase {
                 try {
                     return this.transformResult(url_, response_, (r) => this.processGetProfile(<any>r));
                 } catch (e) {
-                    return <Observable<ProfileResponseDto>><any>_observableThrow(e);
+                    return <Observable<UserDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<ProfileResponseDto>><any>_observableThrow(response_);
+                return <Observable<UserDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetProfile(response: HttpResponseBase): Observable<ProfileResponseDto> {
+    protected processGetProfile(response: HttpResponseBase): Observable<UserDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -209,7 +209,7 @@ export class AccountService extends ServiceBase {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : <ProfileResponseDto>JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = _responseText === "" ? null : <UserDto>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
             }));
         } else if (status === 401) {
@@ -235,7 +235,7 @@ export class AccountService extends ServiceBase {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ProfileResponseDto>(<any>null);
+        return _observableOf<UserDto>(<any>null);
     }
 }
 
@@ -296,6 +296,12 @@ export class AuthenticationService extends ServiceBase {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return _observableOf<void>(<any>null);
             }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ApiErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -350,10 +356,16 @@ export class AuthenticationService extends ServiceBase {
             result200 = _responseText === "" ? null : <LoginResponseDto>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
             }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ApiErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result401: any = null;
-            result401 = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = _responseText === "" ? null : <ApiErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
             return throwException("A server side error occurred.", status, _responseText, _headers, result401);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -956,29 +968,6 @@ export interface ChangePasswordRequestDto {
     newPasswordConfirmation: string;
 }
 
-export interface ProfileResponseDto {
-    firstname?: string | undefined;
-    lastname?: string | undefined;
-}
-
-export interface ChangeProfileRequestDto {
-    firstname: string;
-    lastname: string;
-}
-
-export interface RegistrationRequestDto {
-    email: string;
-    password: string;
-    passwordConfirmation: string;
-    firstname: string;
-    lastname: string;
-}
-
-export interface LoginResponseDto {
-    token?: string | undefined;
-    currentUser?: UserDto | undefined;
-}
-
 export interface EntityDtoOfNullableGuid {
     id?: string | undefined;
 }
@@ -997,6 +986,24 @@ export interface UserDto extends EntityDtoOfNullableGuid {
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
     deletedAt?: string | undefined;
+}
+
+export interface ChangeProfileRequestDto {
+    firstname: string;
+    lastname: string;
+}
+
+export interface RegistrationRequestDto {
+    email: string;
+    password: string;
+    passwordConfirmation: string;
+    firstname: string;
+    lastname: string;
+}
+
+export interface LoginResponseDto {
+    token?: string | undefined;
+    currentUser?: UserDto | undefined;
 }
 
 export interface LoginRequestDto {

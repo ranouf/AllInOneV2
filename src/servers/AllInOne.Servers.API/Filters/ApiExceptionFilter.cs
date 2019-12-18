@@ -13,7 +13,7 @@ namespace AllInOne.Servers.API.Filters
 {
 
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
-    public class ApiExceptionFilter : ExceptionFilterAttribute
+    public sealed class ApiExceptionFilter : ExceptionFilterAttribute
     {
         private readonly IWebHostEnvironment _environment;
         private readonly ILoggerService<ApiExceptionFilter> _logger;

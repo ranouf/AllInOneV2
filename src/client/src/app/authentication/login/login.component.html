@@ -1,0 +1,70 @@
+<td-layout-card-over cardTitle="Login"
+                     cardSubtitle="Please enter your credentials to login."
+                     tdMediaToggle="gt-xs">
+  <form [formGroup]="form" (ngSubmit)="login(form.value)" *ngIf="form">
+    <mat-card-content class="push-bottom-none">
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input name="email"
+                 formControlName="email"
+                 matInput
+                 #emailElement
+                 type="text"
+                 placeholder="Email"
+                 required>
+          <mat-error>
+            <div *ngIf="form.get('email').errors?.required">
+              this field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input name="password"
+                 formControlName="password"
+                 matInput
+                 #passwordElement
+                 type="password"
+                 placeholder="Password"
+                 required>
+          <mat-error>
+            <div *ngIf="form.get('password').errors?.required">
+              this field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div layout="row" flex>
+        <a [routerLink]="['/authentication/register']">Create a new account</a>
+      </div>
+      <td-message label="Login failed"
+                  color="warn"
+                  icon="error"
+                  class="push-top"
+                  [@tdCollapse]="{ value: errorMessage == null, params: { duration: 100 }}"
+                  [@tdHeadshake]="{ value: errorMessage != null, params: { delay:100 }}"
+                  [sublabel]="errorMessage">
+      </td-message>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions>
+      <div class="pad-sm text-center">
+        <button mat-raised-button
+                color="primary"
+                [disabled]="!form.valid"
+                type="submit">
+          <mat-icon>account_circle</mat-icon>
+          Login
+        </button>
+        <button mat-raised-button
+                type="reset"
+                color="accent"
+                (click)="cancel()">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </div>
+    </mat-card-actions>
+  </form>
+</td-layout-card-over>

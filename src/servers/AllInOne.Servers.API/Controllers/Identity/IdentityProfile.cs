@@ -11,8 +11,6 @@ namespace AllInOne.Servers.API.Controllers.Identity
         {
             CreateMap<User, UserDto>()
                 .AddFullAuditedBy();
-            CreateMap<User, LoginResponseDto>();
-            CreateMap<User, ProfileResponseDto>();
             CreateMap<Role, RoleDto>();
         }
     }

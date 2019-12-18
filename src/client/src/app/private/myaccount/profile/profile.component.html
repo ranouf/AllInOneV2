@@ -1,0 +1,70 @@
+<form [formGroup]="form" *ngIf="form" (ngSubmit)="update()">
+  <mat-card>
+    <mat-card-title>Profile</mat-card-title>
+    <mat-card-subtitle>Please fill the fields to update your profile.</mat-card-subtitle>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input #firstname
+                 name="firstname"
+                 matInput
+                 type="text"
+                 maxlength="50"
+                 placeholder="Firstname"
+                 formControlName="firstname"
+                 required />
+          <mat-error>
+            <div *ngIf="form.get('firstname').errors?.required">
+              this field is required.
+            </div>
+            <div *ngIf="form.get('firstname').errors?.maxlength">
+              max length is {{form.get('firstname').errors?.maxlength.requiredLength}}.
+            </div>
+          </mat-error>
+          <mat-hint>{{firstname.value.length}} / 50</mat-hint>
+        </mat-form-field>
+      </div>
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input #lastname
+                 name="lastname"
+                 matInput
+                 type="text"
+                 maxlength="50"
+                 placeholder="Lastname"
+                 formControlName="lastname"
+                 required />
+          <mat-error>
+            <div *ngIf="form.get('lastname').errors?.required">
+              this field is required.
+            </div>
+            <div *ngIf="form.get('lastname').errors?.maxlength">
+              max length is {{form.get('lastname').errors?.maxlength.requiredLength}}.
+            </div>
+          </mat-error>
+          <mat-hint>{{lastname.value.length}} / 50</mat-hint>
+        </mat-form-field>
+      </div>
+      <td-message label="Update profile failed"
+                  color="warn"
+                  icon="error"
+                  class="push-top"
+                  [@tdCollapse]="{ value: errorMessage == null, params: { duration: 1 }}"
+                  [@tdHeadshake]="{ value: errorMessage != null, params: { delay:1 }}"
+                  [sublabel]="errorMessage">
+      </td-message>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions>
+      <div class="pad-sm text-center">
+        <button type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="!form.valid">
+          Save
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+</form>

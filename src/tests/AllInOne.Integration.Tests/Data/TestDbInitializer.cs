@@ -15,7 +15,6 @@ namespace AllInOne.Integration.Tests.Data
                 var context = services.GetRequiredService<AllInOneDbContext>();
                 if (context.Database.EnsureCreated())
                 {
-
                     var userManager = services.GetRequiredService<IUserManager>();
                     var roleManager = services.GetRequiredService<IRoleManager>();
 

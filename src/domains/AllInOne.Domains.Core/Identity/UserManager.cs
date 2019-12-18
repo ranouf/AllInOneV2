@@ -41,9 +41,9 @@ namespace AllInOne.Domains.Core.Identity
             _logger = logger;
         }
 
-        public Task<User> FindByIdAsync(Guid id, bool includeDeleted = false)
+        public async Task<User> FindByIdAsync(Guid id, bool includeDeleted = false)
         {
-            var result = FindBy(u => u.Id == id, includeDeleted);
+            var result = await FindByAsync(u => u.Id == id, includeDeleted);
             if (result != null)
             {
                 _logger.LogInformation($"User found: {result.ToJson()}");
@@ -55,9 +55,9 @@ namespace AllInOne.Domains.Core.Identity
             return result;
         }
 
-        public Task<User> FindByEmailAsync(string email, bool includeDeleted = false)
+        public async Task<User> FindByEmailAsync(string email, bool includeDeleted = false)
         {
-            var result = FindBy(u => u.Email == email, includeDeleted);
+            var result = await FindByAsync(u => u.Email == email, includeDeleted);
             if (result != null)
             {
                 _logger.LogInformation($"User found: {result.ToJson()}");
@@ -193,7 +193,7 @@ namespace AllInOne.Domains.Core.Identity
         }
 
         #region Private
-        private async Task<User> FindBy(Expression<Func<User, bool>> where, bool includeDeleted)
+        private async Task<User> FindByAsync(Expression<Func<User, bool>> where, bool includeDeleted)
         {
             var result = await _userRepository.GetAll()
                 .Include(u => u.CreatedByUser)

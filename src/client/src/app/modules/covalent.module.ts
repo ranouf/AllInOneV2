@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import {
   CovalentMediaModule, CovalentCommonModule, CovalentExpansionPanelModule, CovalentChipsModule, CovalentDialogsModule,
   CovalentFileModule, CovalentPagingModule, CovalentNotificationsModule, CovalentSearchModule, CovalentMenuModule,
-  CovalentLoadingModule, TdLoadingService, CovalentLayoutModule, TdDialogService, CovalentDataTableModule
+  CovalentLoadingModule, TdLoadingService, CovalentLayoutModule, TdDialogService, CovalentDataTableModule, CovalentMessageModule
 } from '@covalent/core';
 
 @NgModule({
@@ -20,7 +20,8 @@ import {
     CovalentCommonModule,
     CovalentExpansionPanelModule,
     CovalentChipsModule,
-    CovalentDataTableModule
+    CovalentDataTableModule,
+    CovalentMessageModule,
   ],
   providers: [
     TdDialogService,

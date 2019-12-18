@@ -1,31 +1,53 @@
 import { Component, OnInit } from '@angular/core';
-import { AccountService, LoginRequestDto, AuthenticationService } from './services/api/api.services';
+import { Router, NavigationStart, NavigationEnd, NavigationError, NavigationCancel } from '@angular/router';
+import { AuthenticationService } from './services/authentication/authentication.service';
+import { UserDto } from './services/api/api.services';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit{
- 
+export class AppComponent implements OnInit {
+
   title = 'AllInOne';
+  public isNavigating = false;
+  public isLoading = true;
+  public currentUser: UserDto;
+
+  //Notification options
+  public options = {
+    timeOut: 5000,
+    showProgressBar: true,
+    pauseOnHover: false,
+    clickToClose: false,
+    clickIconToClose: true
+  }
 
   constructor(
-    public authenticationService: AuthenticationService) {
+    private router: Router,
+    public authenticationService: AuthenticationService,
+  ) {
+  }
+
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   ngOnInit(): void {
-    // Just for testing
-    const credentials: LoginRequestDto = <LoginRequestDto>{
-      email: "test@test.com",
-      password: "test"
-    };
-
-    this.authenticationService.loginUser(credentials)
-      .subscribe(result => {
-        console.log(result);
-      }, error => {
-        console.error(error);
-      });
+    this.router.events.subscribe(
+      async (event) => {
+        if (event instanceof NavigationStart) {
+          this.isNavigating = true;
+        }
+        if (event instanceof NavigationEnd || event instanceof NavigationError || event instanceof NavigationCancel) {
+          await this.delay(300);
+          this.isNavigating = false;
+        }
+      }
+    );
+    this.authenticationService.currentUser.subscribe(value => {
+      this.currentUser = value;
+    })
   }
 }
