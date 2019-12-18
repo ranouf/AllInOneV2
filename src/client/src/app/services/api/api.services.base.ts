@@ -51,10 +51,6 @@ export class ServiceBase {
         break;
       case HttpEventType.Response:
         //  // The full response including the body was received.
-        break;
-      case HttpEventType.User:
-      // A custom event from an interceptor or a backend.
-      default:
         if (response instanceof HttpErrorResponse) {
           return readFile(response.error).pipe(map(value => {
             throw <IErrorInfo>JSON.parse(value);
@@ -62,6 +58,10 @@ export class ServiceBase {
         } else if (event instanceof HttpResponse) {
           console.log('File is completely uploaded!');
         }
+        return processor(response);
+      case HttpEventType.User:
+      // A custom event from an interceptor or a backend.
+      default:
         return processor(response);
     }
     return empty();

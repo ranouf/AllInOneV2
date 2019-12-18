@@ -27,6 +27,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 
@@ -148,6 +149,10 @@ namespace AllInOne.Servers.API
             services.AddControllers();
         }
 
+        [SuppressMessage("Performance", 
+            "CA1822:Mark members as static", 
+            Justification = "ConfigureContainer must not be static to be called by Integration Tests"
+        )]
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule<ApiModule>();
@@ -194,7 +199,7 @@ namespace AllInOne.Servers.API
             app.UseHealthChecksUI(config =>
             {
                 config.UIPath = "/api-healthchecks";
-                config.AddCustomStylesheet("Assets/HealthCheck.css");
+                config.AddCustomStylesheet("Assets\\HealthChecks.css");
             });
 
             app.UseEndpoints(endpoints =>

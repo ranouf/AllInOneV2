@@ -6,6 +6,9 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\SwaggerIndex.html" />
+    <EmbeddedResource Include="Assets\HealthChecks.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

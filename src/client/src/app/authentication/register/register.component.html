@@ -1,0 +1,126 @@
+<td-layout-card-over cardTitle="Register"
+                     cardSubtitle="Please enter your credentials to register."
+                     tdMediaToggle="gt-xs">
+  <form [formGroup]="form" (ngSubmit)="register(form.value)" *ngIf="form">
+    <mat-card-content class="push-bottom-none">
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input name="firstname"
+                 formControlName="firstname"
+                 matInput
+                 #firstnameElement
+                 type="text"
+                 placeholder="First name"
+                 required>
+          <mat-error>
+            <div *ngIf="form.get('firstname').errors?.required">
+              this field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input name="lastname"
+                 formControlName="lastname"
+                 matInput
+                 #lastnameElement
+                 type="text"
+                 placeholder="Last name"
+                 required>
+          <mat-error>
+            <div *ngIf="form.get('lastname').errors?.required">
+              this field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input name="email"
+                 formControlName="email"
+                 matInput
+                 #emailElement
+                 type="text"
+                 placeholder="Email"
+                 required>
+          <mat-error>
+            <div *ngIf="form.get('email').errors?.required">
+              this field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input #password
+                 name="password"
+                 matInput
+                 type="password"
+                 maxlength="50"
+                 placeholder="New password"
+                 formControlName="password"
+                 required />
+          <mat-error>
+            <div *ngIf="form.get('password').errors?.required">
+              this field is required.
+            </div>
+            <div *ngIf="form.get('password').errors?.minlength">
+              min length is {{form.get('password').errors?.minlength.requiredLength}}.
+            </div>
+            <div *ngIf="form.get('password').errors?.maxlength">
+              max length is {{form.get('password').errors?.maxlength.requiredLength}}.
+            </div>
+          </mat-error>
+          <mat-hint>{{password.value.length}} / 50</mat-hint>
+        </mat-form-field>
+      </div>
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input #passwordConfirmation
+                 name="passwordConfirmation"
+                 matInput
+                 maxlength="50"
+                 type="password"
+                 placeholder="Password confirmation"
+                 formControlName="passwordConfirmation"
+                 required />
+          <mat-error>
+            <div *ngIf="form.get('passwordConfirmation').errors?.required">
+              this field is required.
+            </div>
+            <div *ngIf="form.get('passwordConfirmation').errors?.notEqual">
+              passwords don't match
+            </div>
+          </mat-error>
+          <mat-hint>{{passwordConfirmation.value.length}} / 50</mat-hint>
+        </mat-form-field>
+      </div>
+      <td-message label="Registration failed"
+                  color="warn"
+                  icon="error"
+                  [@tdCollapse]="{ value: errorMessage == null, params: { duration: 100 }}"
+                  [@tdHeadshake]="{ value: errorMessage != null, params: { delay:100 }}"
+                  [sublabel]="errorMessage" 
+                  [style.overflow]="'hidden'">
+      </td-message>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions>
+      <button mat-raised-button
+              color="primary"
+              [disabled]="!form.valid"
+              type="submit">
+        <mat-icon>account_circle</mat-icon>
+        Register
+      </button>
+      <button mat-raised-button
+              type="reset"
+              color="accent"
+              (click)="cancel()">
+        <mat-icon>cancel</mat-icon>
+        Cancel
+      </button>
+    </mat-card-actions>
+  </form>
+</td-layout-card-over>

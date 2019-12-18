@@ -78,7 +78,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
             );
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var dto = await response.ConvertToAsync<ProfileResponseDto>(Output);
+            var dto = await response.ConvertToAsync<UserDto>(Output);
 
             Assert.Equal(NewFirstname, dto.Firstname);
             Assert.Equal(NewLastname, dto.Lastname);
@@ -105,7 +105,7 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
             );
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var dto = await response.ConvertToAsync<ProfileResponseDto>(Output);
+            var dto = await response.ConvertToAsync<UserDto>(Output);
             Assert.Equal(TestUserDataBuilder.AdministratorFirstname, dto.Firstname);
             Assert.Equal(TestUserDataBuilder.AdministratorLastname, dto.Lastname);
         }

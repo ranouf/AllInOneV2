@@ -1,9 +1,11 @@
 ﻿using AllInOne.Common;
 using AllInOne.Common.Authentication;
+using AllInOne.Common.Exceptions;
 using AllInOne.Common.Session;
 using AllInOne.Domains.Core.Identity;
 using AllInOne.Domains.Core.Identity.Entities;
 using AllInOne.Servers.API.Controllers.Identity.Dtos;
+using AllInOne.Servers.API.Filters.Dtos;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -31,6 +33,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
 
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.InternalServerError)]
         [Route(Constants.Api.V1.Authentication.Register)]
         public async Task<IActionResult> RegisterUserAsync([FromBody]RegistrationRequestDto dto)
         {
@@ -48,16 +51,26 @@ namespace AllInOne.Servers.API.Controllers.Identity
 
         [HttpPost]
         [ProducesResponseType(typeof(LoginResponseDto), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.Unauthorized)]
         [Route(Constants.Api.V1.Authentication.Login)]
         public async Task<IActionResult> LoginUserAsync([FromBody]LoginRequestDto dto)
         {
             Logger.LogInformation($"{nameof(LoginUserAsync)}", dto.Email);
             var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user == null || user.LockoutEnabled || !await _userManager.CheckPasswordAsync(user, dto.Password))
+            if (user == null)
+            {
+                Logger.LogWarning($"{nameof(LoginUserAsync)}, User not found", dto.Email, user);
+                throw new LocalException("Unauthorized", HttpStatusCode.Unauthorized);
+            }
+            else if (user.LockoutEnabled){
+                Logger.LogWarning($"{nameof(LoginUserAsync)}, User locked", dto.Email, user);
+                throw new LocalException("Accound locked", HttpStatusCode.Unauthorized);
+            }
+            else if (!await _userManager.CheckPasswordAsync(user, dto.Password))
             {
                 Logger.LogWarning($"{nameof(LoginUserAsync)}, Login failed", dto.Email, user);
-                return Unauthorized();
+                throw new LocalException("Unauthorized", HttpStatusCode.Unauthorized);
             }
 
             return new ObjectResult(new LoginResponseDto

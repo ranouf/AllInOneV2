@@ -7,12 +7,19 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularModule } from './modules/angular.module';
 import { CovalentModule } from './modules/covalent.module';
 import { AngularMaterialModule } from './modules/angular-material.module';
-import { AuthenticationService } from './services/api/api.services';
 import { ServiceBaseConfiguration, ServiceBase } from './services/api/api.services.base';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthenticationInterceptor } from './services/authentication/authentication-interceptor';
+import { AuthenticationService } from './services/authentication/authentication.service';
+import { AuthenticationGuard } from './services/authentication/authentication-guard';
+import { NoAuthenticationGuard } from './services/authentication/no-authentication-guard';
+import { PublicComponent } from './public/public.component';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PublicComponent,
   ],
   imports: [
     BrowserModule,
@@ -21,11 +28,15 @@ import { ServiceBaseConfiguration, ServiceBase } from './services/api/api.servic
     AngularMaterialModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    SimpleNotificationsModule.forRoot()
   ],
   providers: [
     AuthenticationService,
+    AuthenticationGuard,
+    NoAuthenticationGuard,
     ServiceBaseConfiguration,
     ServiceBase,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })
