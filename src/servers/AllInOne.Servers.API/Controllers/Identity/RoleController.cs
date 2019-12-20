@@ -1,4 +1,6 @@
 ﻿using AllInOne.Common;
+using AllInOne.Common.Extensions;
+using AllInOne.Common.Logging;
 using AllInOne.Common.Session;
 using AllInOne.Domains.Core.Identity;
 using AllInOne.Domains.Core.Identity.Entities;
@@ -7,7 +9,6 @@ using AllInOne.Servers.API.Controllers.Identity.Dtos;
 using AllInOne.Servers.API.Filters.Dtos;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
             IUserSession session,
             IUserManager userManager,
             IRoleManager roleManager,
-            ILogger<UserController> logger,
+            ILoggerService<UserController> logger,
             IMapper mapper
         ) : base(session, userManager, mapper, logger)
         {
@@ -37,7 +38,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
         public async Task<IActionResult> GetAllRolesAsync()
         {
             var currentUser = await GetCurrentUserAsync();
-            Logger.LogInformation($"{nameof(GetAllRolesAsync)}", currentUser);
+            Logger.LogInformation($"{nameof(GetAllRolesAsync)}, currentUser:{currentUser.ToJson()}");
             var result = await _roleManager.GetAllAsync();
             return new ObjectResult(Mapper.Map<IEnumerable<Role>, IEnumerable<RoleDto>>(result));
         }

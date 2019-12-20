@@ -51,12 +51,13 @@ namespace AllInOne.Domains.Core.Identity.Entities
 
         protected User() { }
 
-        public User(string email, string firstname, string lastname)
+        public User(string email, string firstname, string lastname, bool emailConfirmed = false)
         {
             UserName = email;
             Email = email;
             Firstname = firstname;
             Lastname = lastname;
+            EmailConfirmed = emailConfirmed;
             GenerateNewSecurityStamp();
         }
 

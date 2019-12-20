@@ -5,10 +5,13 @@ using AllInOne.Common.Exceptions;
 using AllInOne.Common.Extensions;
 using AllInOne.Common.Logging;
 using AllInOne.Common.Paging;
+using AllInOne.Domains.Core.Emails;
+using AllInOne.Domains.Core.Identity.Configuration;
 using AllInOne.Domains.Core.Identity.Entities;
 using AllInOne.Domains.Core.Identity.Events;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -19,26 +22,40 @@ namespace AllInOne.Domains.Core.Identity
     public class UserManager : IUserManager
     {
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IRoleManager _roleManager;
+        private readonly IEmailManager _emailManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<User> _userRepository;
         private readonly IDomainEvents _domainEvents;
+        private readonly IdentitySettings _identitySettings;
         private readonly ILoggerService<UserManager> _logger;
 
         public UserManager(
             UserManager<User> userManager,
+            SignInManager<User> signInManager,
             IRoleManager roleManager,
+            IEmailManager emailManager,
             IUnitOfWork unitOfWork,
             IDomainEvents domainEvents,
+            IOptions<IdentitySettings> identitySettings,
             ILoggerService<UserManager> logger
         )
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _roleManager = roleManager;
+            _emailManager = emailManager;
             _unitOfWork = unitOfWork;
             _userRepository = _unitOfWork.GetRepository<User>();
             _domainEvents = domainEvents;
+            _identitySettings = identitySettings.Value;
             _logger = logger;
+        }
+
+        public async Task<bool> CanSignInAsync(User user)
+        {
+            return await _signInManager.CanSignInAsync(user);
         }
 
         public async Task<User> FindByIdAsync(Guid id, bool includeDeleted = false)
@@ -90,23 +107,27 @@ namespace AllInOne.Domains.Core.Identity
         {
             var role = await _roleManager.FindByNameAsync(Constants.Roles.User);
             var result = await CreateAsync(user, password, role);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(result);
+            _logger.LogInformation($"RegistrationEmailConfirmationToken is '{token}'");
+            await _emailManager.SendConfirmEmailAsync(result, token);
+
             await _domainEvents.RaiseAsync(
                 new UserRegisteredEvent { User = result }
             );
             return result;
         }
 
-        public async Task<User> CreateAsync(User user, string password, Role role, bool sendEmail = true, bool raiseEvent = true)
+        public async Task<User> CreateAsync(User user, string password, Role role)
         {
-            var result = await CreateAsync(user, password, role);
-
-            if (raiseEvent)
+            var identityResult = await _userManager.CreateAsync(user, password);
+            if (!identityResult.Succeeded)
             {
-                await _domainEvents.RaiseAsync(
-                    new UserCreatedEvent { User = result }
-                );
+                throw new LocalException(identityResult.Errors.First().Description);
             }
-            return result;
+
+            await AddToRoleAsync(user, role);
+
+            return await FindByEmailAsync(user.Email);
         }
 
         public async Task DeleteAsync(User user)
@@ -125,7 +146,7 @@ namespace AllInOne.Domains.Core.Identity
             );
         }
 
-        public async Task AllowUserToLoginAsync(User user, bool allow, bool raiseEvent = true)
+        public async Task AllowUserToLoginAsync(User user, bool allow)
         {
             var identityResult = await _userManager.SetLockoutEnabledAsync(user, !allow);
             if (!identityResult.Succeeded)
@@ -151,10 +172,7 @@ namespace AllInOne.Domains.Core.Identity
                 user = await FindByIdAsync(user.Id);
                 @event = new UserLockedEvent { User = user };
             }
-            if (raiseEvent)
-            {
-                await _domainEvents.RaiseAsync(@event);
-            }
+            await _domainEvents.RaiseAsync(@event);
         }
 
         public Task<bool> CheckPasswordAsync(User user, string password)
@@ -192,6 +210,87 @@ namespace AllInOne.Domains.Core.Identity
             return result;
         }
 
+        public async Task PasswordForgottenAsync(User user)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            _logger.LogInformation($"PasswordResetToken is '{token}'");
+            await _emailManager.SendPasswordForgottenEmailAsync(user, token);
+        }
+
+        public async Task ResetPasswordAsync(User user, string token, string newPassword)
+        {
+            var identityResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            if (!identityResult.Succeeded)
+            {
+                throw new LocalException(identityResult.Errors.First().Description);
+            }
+        }
+
+        public async Task<User> InviteAsync(User user, Role role)
+        {
+            var identityResult = await _userManager.CreateAsync(user);
+            if (!identityResult.Succeeded)
+            {
+                throw new LocalException(identityResult.Errors.First().Description);
+            }
+            var result = await FindByEmailAsync(user.Email);
+
+            await AddToRoleAsync(result, role);
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(result);
+            _logger.LogInformation($"InvitationEmailConfirmationToken is '{token}'");
+            await _emailManager.SendInviteUserEmailAsync(result, token);
+
+            await _domainEvents.RaiseAsync(
+                new UserInvitedEvent { User = result }
+            );
+            return result;
+        }
+
+        public async Task<User> ConfirmInvitationEmailAsync(User user, string password, string token)
+        {
+            var identityResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!identityResult.Succeeded)
+            {
+                throw new LocalException(identityResult.Errors.First().Description);
+            }
+
+            identityResult = await _userManager.RemovePasswordAsync(user);
+            if (!identityResult.Succeeded)
+            {
+                throw new LocalException(identityResult.Errors.First().Description);
+            }
+
+            identityResult = await _userManager.AddPasswordAsync(user, password);
+            if (!identityResult.Succeeded)
+            {
+                throw new LocalException(identityResult.Errors.First().Description);
+            }
+
+            var result = await FindByIdAsync(user.Id);
+
+            await _domainEvents.RaiseAsync(
+                new InvitationEmailConfirmedEvent { User = result }
+            );
+
+            return result;
+        }
+
+        public async Task ConfirmRegistrationEmailAsync(User user, string token)
+        {
+            var identityResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!identityResult.Succeeded)
+            {
+                throw new LocalException(identityResult.Errors.First().Description);
+            }
+
+            var result = await FindByIdAsync(user.Id);
+
+            await _domainEvents.RaiseAsync(
+                new RegistrationEmailConfirmedEvent { User = result }
+            );
+        }
+
         #region Private
         private async Task<User> FindByAsync(Expression<Func<User, bool>> where, bool includeDeleted)
         {
@@ -206,25 +305,14 @@ namespace AllInOne.Domains.Core.Identity
             return result;
         }
 
-        private async Task<User> CreateAsync(User user, string password, Role role)
+        private async Task AddToRoleAsync(User user, Role role)
         {
-            var identityResult = await _userManager.CreateAsync(user, password);
+            var newUser = await _userManager.FindByEmailAsync(user.Email);
+            var identityResult = await _userManager.AddToRoleAsync(newUser, role.Name);
             if (!identityResult.Succeeded)
             {
                 throw new LocalException(identityResult.Errors.First().Description);
             }
-
-            user = await _userManager.FindByEmailAsync(user.Email);
-
-            await AllowUserToLoginAsync(user, allow: true, raiseEvent: false);
-
-            identityResult = await _userManager.AddToRoleAsync(user, role.Name);
-            if (!identityResult.Succeeded)
-            {
-                throw new LocalException(identityResult.Errors.First().Description);
-            }
-
-            return await FindByIdAsync(user.Id);
         }
         #endregion
     }

@@ -1,4 +1,5 @@
 ﻿using AllInOne.Common.Events;
+using AllInOne.Common.Smtp;
 using Autofac;
 using System.Reflection;
 
@@ -14,6 +15,7 @@ namespace AllInOne.Domain.Core
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
             builder.RegisterModule<EventsModule>();
+            builder.RegisterModule<SmtpModule>();
         }
     }
 }

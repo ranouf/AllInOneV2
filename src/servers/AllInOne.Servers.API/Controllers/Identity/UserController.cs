@@ -1,15 +1,18 @@
 ﻿using AllInOne.Common;
+using AllInOne.Common.Exceptions;
+using AllInOne.Common.Extensions;
+using AllInOne.Common.Logging;
 using AllInOne.Common.Paging;
 using AllInOne.Common.Session;
 using AllInOne.Domains.Core.Identity;
 using AllInOne.Domains.Core.Identity.Entities;
 using AllInOne.Servers.API.Attributes;
+using AllInOne.Servers.API.Controllers.Dtos;
 using AllInOne.Servers.API.Controllers.Dtos.Paging;
 using AllInOne.Servers.API.Controllers.Identity.Dtos;
 using AllInOne.Servers.API.Filters.Dtos;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -26,7 +29,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
             IUserSession session,
             IUserManager userManager,
             IRoleManager roleManager,
-            ILogger<UserController> logger,
+            ILoggerService<UserController> logger,
             IMapper mapper
         ) : base(session, userManager, mapper, logger)
         {
@@ -43,13 +46,9 @@ namespace AllInOne.Servers.API.Controllers.Identity
         public async Task<IActionResult> GetUserByIdAsync([FromRoute]Guid id)
         {
             var currentUser = await GetCurrentUserAsync();
-            Logger.LogInformation($"{nameof(GetUserByIdAsync)}", currentUser, id);
+            Logger.LogInformation($"{nameof(GetUserByIdAsync)}, currentUser:{currentUser.ToJson()}, id:{id}");
             var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                Logger.LogWarning($"{nameof(GetUserByIdAsync)}, User not found", currentUser, id);
-                return NotFound();
-            }
+            ValidateUserExists(user, id);
             return new ObjectResult(Mapper.Map<User, UserDto>(user));
         }
 
@@ -60,7 +59,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
         public async Task<IActionResult> GetUsersAsync([FromQuery]PagedRequestDto dto)
         {
             var currentUser = await GetCurrentUserAsync();
-            Logger.LogInformation($"{nameof(GetUsersAsync)}", currentUser, dto);
+            Logger.LogInformation($"{nameof(GetUsersAsync)}, currentUser:{currentUser.ToJson()}, dto:{dto.ToJson()}");
             var result = await _userManager.GetAllAsync(
                 dto.Filter,
                 dto.MaxResultCount,
@@ -75,16 +74,13 @@ namespace AllInOne.Servers.API.Controllers.Identity
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.InternalServerError)]
         [AuthorizeAdministrators]
-        public async Task<IActionResult> CreateUserAsync([FromBody]CreateUserRequestDto dto)
+        public async Task<IActionResult> InviteUserAsync([FromBody]InviteUserRequestDto dto)
         {
             var currentUser = await GetCurrentUserAsync();
-            Logger.LogInformation($"{nameof(CreateUserAsync)}", currentUser, dto);
+            Logger.LogInformation($"{nameof(InviteUserAsync)}, currentUser:{currentUser.ToJson()}, dto:{dto.ToJson()}");
+            
             var role = await _roleManager.FindByIdAsync(dto.RoleId);
-            if (role == null)
-            {
-                Logger.LogWarning($"{nameof(CreateUserAsync)}, Role not found", currentUser, dto);
-                return NotFound();
-            }
+            ValidateRoleExists(role, dto, currentUser);
 
             var newUser = new User(
               dto.Email,
@@ -92,7 +88,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
               dto.Lastname
             );
 
-            newUser = await _userManager.CreateAsync(newUser, dto.Password, role);
+            newUser = await _userManager.InviteAsync(newUser, role);
             return new ObjectResult(Mapper.Map<User, UserDto>(newUser));
         }
 
@@ -106,27 +102,19 @@ namespace AllInOne.Servers.API.Controllers.Identity
         public async Task<IActionResult> UpdateUserAsync([FromRoute]Guid id, [FromBody]UpdateUserRequestDto dto)
         {
             var currentUser = await GetCurrentUserAsync();
-            Logger.LogInformation($"{nameof(UpdateUserAsync)}", currentUser, dto);
+            Logger.LogInformation($"{nameof(UpdateUserAsync)}, currentUser:{currentUser.ToJson()}, dto:{dto.ToJson()}");
 
             var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                Logger.LogWarning($"{nameof(UpdateUserAsync)}, User not found", currentUser, dto);
-                return NotFound("User not found");
-            }
+            ValidateUserExists(user, id);
 
             var role = await _roleManager.FindByIdAsync(dto.RoleId);
-            if (role == null)
-            {
-                Logger.LogWarning($"{nameof(UpdateUserAsync)}, Role not found", currentUser, dto);
-                return NotFound("Role not found");
-            }
+            ValidateRoleExists(role, dto, currentUser);
 
             user.Update(
                 dto.Firstname,
                 dto.Lastname
             );
-            user.SetRole(role);
+            user.SetRole(role); //TODO To validate
 
             user = await _userManager.UpdateAsync(user);
             return new ObjectResult(Mapper.Map<User, UserDto>(user));
@@ -141,19 +129,15 @@ namespace AllInOne.Servers.API.Controllers.Identity
         public async Task<IActionResult> DeleteUserAsync([FromRoute]Guid id)
         {
             var currentUser = await GetCurrentUserAsync();
-            Logger.LogInformation($"{nameof(AllowToLoginAsync)}", currentUser, id);
+            Logger.LogInformation($"{nameof(AllowToLoginAsync)}, currentUser:{currentUser.ToJson()}, id:{id}");
             if (currentUser.Id == id)
             {
-                Logger.LogWarning($"{nameof(AllowToLoginAsync)}, Can't delete himself", currentUser, id);
+                Logger.LogWarning($"{nameof(AllowToLoginAsync)}, Can't delete himself, currentUser:{currentUser.ToJson()}, id:{id}");
                 return Unauthorized();
             }
 
             var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                Logger.LogWarning($"{nameof(AllowToLoginAsync)}, User not found", currentUser, id);
-                return NotFound();
-            }
+            ValidateUserExists(user, id);
 
             await _userManager.DeleteAsync(user);
 
@@ -183,21 +167,20 @@ namespace AllInOne.Servers.API.Controllers.Identity
         }
 
         #region Private
-
         private async Task<IActionResult> AllowToLoginAsync(Guid id, bool allow)
         {
             var currentUser = await GetCurrentUserAsync();
-            Logger.LogInformation(nameof(AllowToLoginAsync), currentUser, id, allow);
+            Logger.LogInformation($"{nameof(AllowToLoginAsync)},currentUser:{currentUser.ToJson()}, id:{id}, allow:{allow}");
             if (currentUser.Id == id)
             {
-                Logger.LogWarning($"{nameof(AllowToLoginAsync)}, Can't allow himself", currentUser, id);
+                Logger.LogWarning($"{nameof(AllowToLoginAsync)}, Can't allow himself, currentUser:{currentUser.ToJson()}, id:{id}");
                 return Unauthorized();
             }
 
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                Logger.LogWarning($"{nameof(AllowToLoginAsync)}, User not found", currentUser, id);
+                Logger.LogWarning($"{nameof(AllowToLoginAsync)}, User not found, currentUser:{currentUser.ToJson()}, id:{id}");
                 return NotFound();
             }
 
@@ -206,6 +189,32 @@ namespace AllInOne.Servers.API.Controllers.Identity
             return Ok();
         }
 
+        private void ValidateRoleExists(Role role, IDto dto, User currentUser)
+        {
+            if (role == null)
+            {
+                Logger.LogWarning($"Role not found, currentUser:{currentUser.ToJson()}, dto:{dto.ToJson()}");
+                throw new LocalException("NotFound", HttpStatusCode.NotFound);
+            }
+        }
+
+        private void ValidateUserExists(User user, IDto dto)
+        {
+            if (user == null)
+            {
+                Logger.LogWarning($"User not found, dto:{dto.ToJson()}");
+                throw new LocalException("NotFound", HttpStatusCode.NotFound);
+            }
+        }
+
+        private void ValidateUserExists(User user, Guid id)
+        {
+            if (user == null)
+            {
+                Logger.LogWarning($"User not found, id:{id}");
+                throw new LocalException("NotFound", HttpStatusCode.NotFound);
+            }
+        }
         #endregion
     }
 }

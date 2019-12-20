@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+﻿using AllInOne.Common.Logging;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace AllInOne.Servers.API.Controllers
 {
@@ -8,9 +8,9 @@ namespace AllInOne.Servers.API.Controllers
     public abstract class BaseController : Controller
     {
         public IMapper Mapper { get; }
-        public ILogger Logger { get; }
+        public ILoggerService Logger { get; }
 
-        public BaseController(IMapper mapper, ILogger logger)
+        public BaseController(IMapper mapper, ILoggerService logger)
         {
             Mapper = mapper;
             Logger = logger;

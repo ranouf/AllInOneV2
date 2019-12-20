@@ -18,8 +18,11 @@ namespace AllInOne.Domains.Core.Identity.Configuration
         public string RoleName { get; set; }
     }
 
-    public class DefaultUserAccountsSettings
+    public class IdentitySettings
     {
+        [Required]
+        public bool EnableConfirmEmailOnRegistration { get; set; }
+
         [Required]
         [MinLength(1)]
         public List<UserAccount> UserAccounts { get; set; }

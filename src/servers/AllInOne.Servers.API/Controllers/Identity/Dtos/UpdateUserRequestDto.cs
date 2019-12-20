@@ -1,9 +1,10 @@
-﻿using System;
+﻿using AllInOne.Servers.API.Controllers.Dtos;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace AllInOne.Servers.API.Controllers.Identity.Dtos
 {
-    public class UpdateUserRequestDto
+    public class UpdateUserRequestDto: IDto
     {
         [Required]
         public string Firstname { get; set; }

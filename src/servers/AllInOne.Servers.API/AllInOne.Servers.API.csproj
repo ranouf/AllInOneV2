@@ -5,6 +5,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\EmailTemplates\ConfirmEmail.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\EmailTemplates\InviteUser.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\EmailTemplates\ConfirmEmail.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\EmailTemplates\RegisterUser.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\EmailTemplates\PasswordForgotten.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="Assets\SwaggerIndex.html" />
     <EmbeddedResource Include="Assets\HealthChecks.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

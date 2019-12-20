@@ -44,15 +44,15 @@ namespace AllInOne.Integration.Tests.Data
 
             var users = new User[]
             {
-                new User(AdministratorEmail, AdministratorFirstname, AdministratorLastname),
-                new User(ManagerEmail, "Jack", "Wiliams"),
-                new User(UserEmail, "Donald", "Duck")
+                new User(AdministratorEmail, AdministratorFirstname, AdministratorLastname, emailConfirmed: true),
+                new User(ManagerEmail, "Jack", "Wiliams", emailConfirmed: true),
+                new User(UserEmail, "Donald", "Duck", emailConfirmed: true)
             };
 
             for (int i = 0; i < users.Length; i++)
             {
                 var user = users[i];
-                _userManager.CreateAsync(user, Password, roles[i], sendEmail: false, raiseEvent: false).Wait();
+                _userManager.CreateAsync(user, Password, roles[i]).Wait();
             }
             Output.WriteLine($"{users.Length} Users have been created.");
         }

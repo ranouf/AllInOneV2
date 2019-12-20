@@ -1,7 +1,7 @@
-﻿using AllInOne.Servers.API.Controllers.Dtos;
+﻿using AllInOne.Common.Extensions;
+using AllInOne.Servers.API.Controllers.Dtos;
 using AllInOne.Servers.API.Controllers.Dtos.Entities;
 using AllInOne.Servers.API.Filters.Dtos;
-using AllInOne.Common.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Net;
@@ -71,6 +71,19 @@ namespace AllInOne.Integration.Tests.Extensions
             this HttpClient client,
             string path,
             ITestOutputHelper output,
+            TPrimaryKey id,
+            IDto dto
+        )
+        {
+            var builder = BuildPathWithEntity(client, path, id);
+            output.WriteLine($"METHOD PUT, url:'{builder.Uri.PathAndQuery}' dto:'{dto.ToJson()}'");
+            return await WriteApiError(await client.PutAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
+        }
+
+        public static async Task<HttpResponseMessage> PutByIdAsync<TPrimaryKey>(
+            this HttpClient client,
+            string path,
+            ITestOutputHelper output,
             IEntityDto<TPrimaryKey> dto
         )
         {
@@ -134,6 +147,12 @@ namespace AllInOne.Integration.Tests.Extensions
             }
             return response;
         }
+
+        private static UriBuilder BuildPathWithEntity<TPrimaryKey>(HttpClient client, string path, TPrimaryKey id)
+        {
+            return BuildPathWithId(client, path, id);
+        }
+
         private static UriBuilder BuildPathWithEntity<TPrimaryKey>(HttpClient client, string path, IEntityDto<TPrimaryKey> dto)
         {
             return BuildPathWithId(client, path, dto.Id);
