@@ -26,7 +26,7 @@ namespace AllInOne.Domains.Core.Emails
         public async Task SendConfirmEmailAsync(User user, string token)
         {
             var confirmEmailUrl = new Uri(_session.BaseUrl)
-                .Append("/authenticate")
+                .Append("/authentication")
                 .Append("/confirmemail")
                 .Append(token)
                 .Append(user.Email);
@@ -48,10 +48,10 @@ namespace AllInOne.Domains.Core.Emails
         public async Task SendPasswordForgottenEmailAsync(User user, string token)
         {
             var resetPasswordUrl = new Uri(_session.BaseUrl)
-                .Append("/authenticate")
+                .Append("/authentication")
                 .Append("/resetpassword")
-                .Append(token)
-                .Append(user.Email);
+                .AddQueryStringParameter("token", token)
+                .AddQueryStringParameter("email", user.Email);
 
             await SendEmailAsync(
                 user.Email,
@@ -69,7 +69,7 @@ namespace AllInOne.Domains.Core.Emails
         public async Task SendInviteUserEmailAsync(User user, string token)
         {
             var invitationUrl = new Uri(_session.BaseUrl)
-                .Append("/authenticate")
+                .Append("/authentication")
                 .Append("/invite")
                 .Append(token)
                 .Append(user.Email);

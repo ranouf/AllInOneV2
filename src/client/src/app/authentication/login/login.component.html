@@ -35,17 +35,46 @@
           </mat-error>
         </mat-form-field>
       </div>
-      <div layout="row" flex>
-        <a [routerLink]="['/authentication/register']">Create a new account</a>
+      <div layout="row" class="justify-content-between" flex>
+        <a [routerLink]="['/authentication/passwordforgotten']">Password forgotten</a>
       </div>
-      <td-message label="Login failed"
+      <td-message #message1
+                  label="Login failed"
                   color="warn"
                   icon="error"
                   class="push-top"
                   [@tdCollapse]="{ value: errorMessage == null, params: { duration: 100 }}"
                   [@tdHeadshake]="{ value: errorMessage != null, params: { delay:100 }}"
                   [sublabel]="errorMessage">
+        <ng-template *ngIf="errorMessage == 'Email not confirmed'">
+          Test
+        </ng-template>
+        <button td-message-actions
+                color="primary"
+                [disabled]="!form.valid"
+                type="submit">
+          <mat-icon>account_circle</mat-icon>
+          Login
+        </button>
+        <mat-icon td-message-actions (click)="message1.close()">account_circle</mat-icon>
+        <div td-message>
+          test
+        </div>
+        // .. body goes here
       </td-message>
+      <td-message #message label="Label" sublabel="Sublabel goes here" icon="warning" color="warn" [opened]="true">
+        <button type="button" td-message-actions mat-button>View More</button>
+        <button type="button" td-message-actions mat-button (click)="message.close()">Close</button>
+        // .. body goes here
+        <div> test</div>
+        <div td-message>
+          test2
+        </div>
+      </td-message>
+      <app-message title="Login failed"
+                   color="warn"
+                   icon="warning"
+                   >Test</app-message>
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions>
@@ -64,6 +93,11 @@
           <mat-icon>cancel</mat-icon>
           Cancel
         </button>
+      </div>
+
+      <div class="pad-sm text-center">
+        or
+        <a  [routerLink]="['/authentication/register']">Create a new account</a>
       </div>
     </mat-card-actions>
   </form>
