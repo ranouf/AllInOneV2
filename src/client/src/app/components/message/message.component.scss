@@ -21,23 +21,19 @@
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
-  :host {
-    display: block;
-    background-color: green;
-  }
+  app-message {
 
-  .app-message {
-    &.mat-primary {
+    &.mat-primary .alert {
       color: mat-color($primary);
       background-color: mat-color($primary, 0.15);
     }
 
-    &.mat-accent {
+    &.mat-accent .alert {
       color: mat-color($accent);
       background-color: mat-color($accent, 0.15);
     }
 
-    &.mat-warn {
+    &.mat-warn .alert {
       color: mat-color($warn);
       background-color: mat-color($warn, 0.15);
     }
