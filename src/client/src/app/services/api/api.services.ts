@@ -310,6 +310,63 @@ export class AuthenticationService extends ServiceBase {
         return _observableOf<void>(<any>null);
     }
 
+    resendEmailConfirmation(dto: ResendEmailConfirmationRequestDto): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/authentication/resendemailconfirmation";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(dto);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            withCredentials: true,		
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("post", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.transformResult(url_, response_, (r) => this.processResendEmailConfirmation(<any>r));
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.transformResult(url_, response_, (r) => this.processResendEmailConfirmation(<any>r));
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processResendEmailConfirmation(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ApiErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
     confirmRegistrationEmail(dto: ConfirmRegistrationEmailRequestDto): Observable<void> {
         let url_ = this.baseUrl + "/api/v1/authentication/confirmregistrationemail";
         url_ = url_.replace(/[?&]$/, "");
@@ -358,6 +415,12 @@ export class AuthenticationService extends ServiceBase {
             let result500: any = null;
             result500 = _responseText === "" ? null : <ApiErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
             return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result401: any = null;
+            result401 = _responseText === "" ? null : <ApiErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -415,6 +478,12 @@ export class AuthenticationService extends ServiceBase {
             let result500: any = null;
             result500 = _responseText === "" ? null : <ApiErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
             return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result401: any = null;
+            result401 = _responseText === "" ? null : <ApiErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -1214,6 +1283,7 @@ export interface UserDto extends EntityDtoOfNullableGuid {
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
     deletedAt?: string | undefined;
+    invitedBy?: string | undefined;
 }
 
 export interface ChangeProfileRequestDto {
@@ -1227,6 +1297,10 @@ export interface RegistrationRequestDto {
     passwordConfirmation: string;
     firstname: string;
     lastname: string;
+}
+
+export interface ResendEmailConfirmationRequestDto {
+    email: string;
 }
 
 export interface ConfirmRegistrationEmailRequestDto {

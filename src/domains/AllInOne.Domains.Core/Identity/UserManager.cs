@@ -107,12 +107,20 @@ namespace AllInOne.Domains.Core.Identity
         {
             var role = await _roleManager.FindByNameAsync(Constants.Roles.User);
             var result = await CreateAsync(user, password, role);
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(result);
-            _logger.LogInformation($"RegistrationEmailConfirmationToken is '{token}'");
-            await _emailManager.SendConfirmEmailAsync(result, token);
+            await SendEmailConfirmationAsync(result);
 
             await _domainEvents.RaiseAsync(
                 new UserRegisteredEvent { User = result }
+            );
+            return result;
+        }
+
+        public async Task<User> ReSendEmailConfirmationAsync(User user)
+        {
+            var result = await SendEmailConfirmationAsync(user);
+
+            await _domainEvents.RaiseAsync(
+                new UserResendEmailConfirmationEvent { User = result }
             );
             return result;
         }
@@ -191,7 +199,7 @@ namespace AllInOne.Domains.Core.Identity
             await UpdateAsync(user);
         }
 
-        public async Task<User> UpdateAsync(User user, bool raiseEvent = true)
+        public async Task<User> UpdateAsync(User user)
         {
             var identityResult = await _userManager.UpdateAsync(user);
             if (!identityResult.Succeeded)
@@ -200,12 +208,9 @@ namespace AllInOne.Domains.Core.Identity
             }
 
             var result = await FindByIdAsync(user.Id);
-            if (raiseEvent)
-            {
-                await _domainEvents.RaiseAsync(
-                    new UserUpdatedEvent { User = result }
-                );
-            }
+            await _domainEvents.RaiseAsync(
+                new UserUpdatedEvent { User = result }
+            );
 
             return result;
         }
@@ -238,7 +243,7 @@ namespace AllInOne.Domains.Core.Identity
             await AddToRoleAsync(result, role);
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(result);
-            _logger.LogInformation($"InvitationEmailConfirmationToken is '{token}'");
+            _logger.LogInformation($"EmailConfirmationToken is '{token}'");
             await _emailManager.SendInviteUserEmailAsync(result, token);
 
             await _domainEvents.RaiseAsync(
@@ -298,6 +303,7 @@ namespace AllInOne.Domains.Core.Identity
                 .Include(u => u.CreatedByUser)
                 .Include(u => u.UpdatedByUser)
                 .Include(u => u.DeletedByUser)
+                .Include(u => u.InvitedByUser)
                 .Include(u => u.UserRoles)
                 .ThenInclude(u => u.Role)
                 .IgnoreQueryFilters(includeDeleted)
@@ -313,6 +319,14 @@ namespace AllInOne.Domains.Core.Identity
             {
                 throw new LocalException(identityResult.Errors.First().Description);
             }
+        }
+
+        private async Task<User> SendEmailConfirmationAsync(User user)
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            _logger.LogInformation($"EmailConfirmationToken is '{token}'");
+            await _emailManager.SendConfirmEmailAsync(user, token);
+            return user;
         }
         #endregion
     }

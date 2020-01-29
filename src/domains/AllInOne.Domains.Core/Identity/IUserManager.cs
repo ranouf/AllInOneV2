@@ -17,11 +17,12 @@ namespace AllInOne.Domains.Core.Identity
         Task DeleteAsync(User user);
         Task<bool> CheckPasswordAsync(User user, string password);
         Task ChangePasswordAsync(User user, string currentPassword, string newPassword);
-        Task<User> UpdateAsync(User user, bool raiseEvent = true);
+        Task<User> UpdateAsync(User user);
         Task PasswordForgottenAsync(User user);
         Task ResetPasswordAsync(User user, string token, string newPassword);
         Task<bool> CanSignInAsync(User user);
         Task ConfirmRegistrationEmailAsync(User user, string token);
         Task<User> ConfirmInvitationEmailAsync(User user, string password, string token);
+        Task<User> ReSendEmailConfirmationAsync(User user);
     }
 }

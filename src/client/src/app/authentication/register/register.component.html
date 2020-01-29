@@ -1,7 +1,7 @@
 <td-layout-card-over cardTitle="Register"
                      cardSubtitle="Please enter your credentials to register."
                      tdMediaToggle="gt-xs">
-  <form [formGroup]="form" (ngSubmit)="register(form.value)" *ngIf="form">
+  <form [formGroup]="form" (ngSubmit)="register()" *ngIf="form">
     <mat-card-content class="push-bottom-none">
       <div layout="row" flex>
         <mat-form-field flex>
@@ -101,26 +101,28 @@
                   icon="error"
                   [@tdCollapse]="{ value: errorMessage == null, params: { duration: 100 }}"
                   [@tdHeadshake]="{ value: errorMessage != null, params: { delay:100 }}"
-                  [sublabel]="errorMessage" 
+                  [sublabel]="errorMessage"
                   [style.overflow]="'hidden'">
       </td-message>
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions>
-      <button mat-raised-button
-              color="primary"
-              [disabled]="!form.valid"
-              type="submit">
-        <mat-icon>account_circle</mat-icon>
-        Register
-      </button>
-      <button mat-raised-button
-              type="reset"
-              color="accent"
-              (click)="cancel()">
-        <mat-icon>cancel</mat-icon>
-        Cancel
-      </button>
+      <div class="pad-sm text-center">
+        <button mat-raised-button
+                color="primary"
+                [disabled]="!form.valid"
+                type="submit">
+          <mat-icon>account_circle</mat-icon>
+          Register
+        </button>
+        <button mat-raised-button
+                type="reset"
+                color="accent"
+                (click)="cancel()">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </div>
     </mat-card-actions>
   </form>
 </td-layout-card-over>

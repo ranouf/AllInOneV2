@@ -11,6 +11,8 @@ namespace AllInOne.Common.Logging
     {
         private readonly TelemetryClient _telemetryClient;
         private readonly ILogger<T> _logger;
+        // Flag: Has Dispose already been called?
+        bool disposed = false;
 
         public LoggerService(
             TelemetryClient telemetryClient,
@@ -145,6 +147,28 @@ namespace AllInOne.Common.Logging
         ValueTask IAsyncDisposable.DisposeAsync()
         {
             return new ValueTask(Task.Run(() => Flush()));
+        }
+
+        public void Dispose()
+        {
+            // Dispose of unmanaged resources.
+            Dispose(true);
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
+        }
+
+        // Protected implementation of Dispose pattern.
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                Flush();
+            }
+
+            disposed = true;
         }
 
         #region Private

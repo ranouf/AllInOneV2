@@ -15,7 +15,7 @@ namespace AllInOne.Domains.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.1")
+                .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -90,6 +90,9 @@ namespace AllInOne.Domains.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasComputedColumnSql("[FirstName] + ' ' + [LastName]");
 
+                    b.Property<Guid?>("InvitedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -143,6 +146,8 @@ namespace AllInOne.Domains.Infrastructure.Migrations
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Email");
+
+                    b.HasIndex("InvitedByUserId");
 
                     b.HasIndex("IsDeleted");
 
@@ -269,6 +274,10 @@ namespace AllInOne.Domains.Infrastructure.Migrations
                     b.HasOne("AllInOne.Domains.Core.Identity.Entities.User", "DeletedByUser")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("AllInOne.Domains.Core.Identity.Entities.User", "InvitedByUser")
+                        .WithMany()
+                        .HasForeignKey("InvitedByUserId");
 
                     b.HasOne("AllInOne.Domains.Core.Identity.Entities.User", "UpdatedByUser")
                         .WithMany()

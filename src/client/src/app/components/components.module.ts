@@ -6,7 +6,9 @@ import { AngularMaterialModule } from '../modules/angular-material.module';
 
 
 @NgModule({
-  declarations: [MessageComponent],
+  declarations: [
+    MessageComponent
+  ],
   imports: [
     CommonModule,
     AngularMaterialModule,

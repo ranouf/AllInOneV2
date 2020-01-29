@@ -16,6 +16,10 @@ const routes: Routes = [
         path: 'myaccount',
         loadChildren: 'src/app/private/myaccount/myaccount.module#MyAccountModule',
       },
+      {
+        path: 'administration',
+        loadChildren: 'src/app/private/administration/administration.module#AdministrationModule',
+      },
     ]
   }
 ];

@@ -2,9 +2,9 @@
 {
     public class SmtpClientFactory : ISmtpClientFactory
     {
-        public ISmtpClient CreateSmtpClient(string host, int port)
+        public ISmtpClient CreateSmtpClient()
         {
-            return new SmtpClient(host, port);
+            return new SmtpClient();
         }
     }
 }

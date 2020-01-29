@@ -85,7 +85,8 @@ namespace AllInOne.Servers.API.Controllers.Identity
             var newUser = new User(
               dto.Email,
               dto.Firstname,
-              dto.Lastname
+              dto.Lastname,
+              currentUser
             );
 
             newUser = await _userManager.InviteAsync(newUser, role);

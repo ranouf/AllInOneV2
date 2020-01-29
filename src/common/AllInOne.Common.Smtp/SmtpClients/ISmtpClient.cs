@@ -1,15 +1,14 @@
-﻿using System.Net;
-using System.Net.Mail;
+﻿using MimeKit;
+using System;
 using System.Threading.Tasks;
 
 namespace AllInOne.Common.Smtp.SmtpClients
 {
-    public interface ISmtpClient
+    public interface ISmtpClient : IAsyncDisposable
     {
-        bool UseDefaultCredentials { get; set; }
-        bool EnableSsl { get; set; }
-        ICredentialsByHost Credentials { get; set; }
-
-        public Task SendMailAsync(MailMessage message);
+        bool IsConnected { get; }
+        Task ConnectAsync(string host, int port, bool useSsl);
+        Task AuthenticateAsync(string username, string password);
+        Task SendAsync(MimeMessage message);
     }
 }

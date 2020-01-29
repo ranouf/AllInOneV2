@@ -31,25 +31,21 @@ namespace AllInOne.Common.Settings.Extensions
                 .Configure<T>(config.GetSection(section))
                 .PostConfigure<T>(settings =>
                 {
-                    var configErrors = settings.ValidationErrors().ToArray();
-                    if (configErrors.Any())
+                    if (!settings.IsValid(out var configErrors))
                     {
-                        var aggrErrors = string.Join(",", configErrors);
-                        var count = configErrors.Length;
+                        var errorMessages = configErrors.Select(rv => rv.ErrorMessage);
+                        var aggrErrors = string.Join(",", errorMessages);
+                        var count = errorMessages.Count();
                         throw new ApplicationException($"Found {count} configuration error(s) in {configType}: {aggrErrors}, settings:'{settings.ToJson()}'");
                     }
                 });
         }
 
-        private static IEnumerable<string> ValidationErrors(this object obj)
+        public static bool IsValid(this object obj, out ICollection<ValidationResult> results)
         {
             var context = new ValidationContext(obj, serviceProvider: null, items: null);
-            var results = new List<ValidationResult>();
-            Validator.TryValidateObject(obj, context, results, true);
-            foreach (var validationResult in results)
-            {
-                yield return validationResult.ErrorMessage;
-            }
+            results = new List<ValidationResult>();
+            return Validator.TryValidateObject(obj, context, results, true); ;
         }
     }
 }

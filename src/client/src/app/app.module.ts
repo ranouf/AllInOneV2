@@ -15,17 +15,21 @@ import { AuthenticationGuard } from './services/authentication/authentication-gu
 import { NoAuthenticationGuard } from './services/authentication/no-authentication-guard';
 import { PublicComponent } from './public/public.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
+import { IsInRolePipe } from './pipes/is-in-role.pipe';
+import { ComponentsModule } from './components/components.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     PublicComponent,
+    IsInRolePipe
   ],
   imports: [
     BrowserModule,
     AngularModule,
     CovalentModule,
     AngularMaterialModule,
+    ComponentsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     SimpleNotificationsModule.forRoot()

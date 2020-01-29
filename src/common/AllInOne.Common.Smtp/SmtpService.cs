@@ -3,11 +3,11 @@ using AllInOne.Common.Logging;
 using AllInOne.Common.Smtp.Configuration;
 using AllInOne.Common.Smtp.SmtpClients;
 using Microsoft.Extensions.Options;
+using MimeKit;
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
+using AllInOne.Common.Smtp.Extensions;
 
 namespace AllInOne.Common.Smtp
 {
@@ -30,23 +30,19 @@ namespace AllInOne.Common.Smtp
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
-            var email = new MailMessage
-            {
-                From = new MailAddress(_smtpSettings.DefaultFrom),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            };
-            email.To.Add(to);
-            var client = _smtpClientFactory.CreateSmtpClient(_smtpSettings.Server, _smtpSettings.Port);
-            client.UseDefaultCredentials = false;
-            client.EnableSsl = _smtpSettings.EnableSsl;
-            client.Credentials = new NetworkCredential(_smtpSettings.Username, _smtpSettings.Password);
+            var email = GenerateEmail(to, subject, body);
 
             try
             {
-                _logger.LogInformation($"[{nameof(SmtpService)}] An email will be send. email: {email.ToJson()}");
-                await client.SendMailAsync(email);
+                await using (var smtpClient = _smtpClientFactory.CreateSmtpClient())
+                {
+                    await smtpClient.ConnectAsync(_smtpSettings.Server, _smtpSettings.Port, _smtpSettings.EnableSsl);
+
+                    await smtpClient.AuthenticateAsync(_smtpSettings.Username, _smtpSettings.Password);
+
+                    await smtpClient.SendAsync(email);
+                }
+
                 _logger.LogInformation($"[{nameof(SmtpService)}] Email has been sent. email: {email.ToJson()}");
             }
             catch (Exception e)
@@ -54,6 +50,16 @@ namespace AllInOne.Common.Smtp
                 _logger.LogError($"[{nameof(SmtpService)}] Email sending failed. email: {email.ToJson()}", e);
                 throw;
             }
+        }
+
+        private MimeMessage GenerateEmail(string to, string subject, string body)
+        {
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress(_smtpSettings.DefaultFrom));
+            email.To.Add(new MailboxAddress(to));
+            email.Subject = subject;
+            email.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
+            return email;
         }
     }
 }

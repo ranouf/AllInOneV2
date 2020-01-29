@@ -86,7 +86,8 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
                             new User(
                                 userAccount.Email,
                                 userAccount.Firstname,
-                                userAccount.Lastname
+                                userAccount.Lastname,
+                                emailConfirmed: true
                             ),
                             userAccount.Password,
                             role

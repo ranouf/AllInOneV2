@@ -19,6 +19,7 @@ namespace AllInOne.Servers.API.Controllers.Identity.Dtos
         public string CreatedAt { get; set; }
         public string UpdatedAt { get; set; }
         public string DeletedAt { get; set; }
+        public string InvitedBy { get; set; }
 
         public int CompareTo(object obj)
         {

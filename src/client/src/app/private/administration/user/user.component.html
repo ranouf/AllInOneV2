@@ -1,0 +1,85 @@
+
+
+<form [formGroup]="form" (ngSubmit)="save()" *ngIf="form">
+  <mat-card>
+    <mat-card-title>User</mat-card-title>
+    <mat-card-subtitle>Fill the form to edit user.</mat-card-subtitle>
+    <mat-divider></mat-divider>
+    <mat-card-content class="push-bottom-none">
+      <ng-template tdLoading="editUser"
+                   tdLoadingType="circle"
+                   tdLoadingStrategy="overlay"
+                   tdLoadingColor="accent">
+        <div layout="row" flex>
+          <mat-form-field flex>
+            <input name="email"
+                   formControlName="email"
+                   matInput
+                   type="text"
+                   placeholder="Email" />
+            <mat-error>
+              Email not valid
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div layout="row" flex>
+          <mat-form-field flex>
+            <input name="firstname"
+                   formControlName="firstname"
+                   matInput
+                   #firstnameElement
+                   type="text"
+                   placeholder="Firstname"
+                   required />
+            <mat-error>
+              Required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div layout="row" flex>
+          <mat-form-field flex>
+            <input name="lastname"
+                   formControlName="lastname"
+                   matInput
+                   #lastnameElement
+                   type="text"
+                   placeholder="Lastname"
+                   required />
+            <mat-error>
+              Required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div layout="row" flex>
+          <mat-form-field flex
+                          *ngIf="roles">
+            <mat-select name="roleId"
+                        placeholder="Role"
+                        formControlName="roleId"
+                        #roleIdElement
+                        required>
+              <mat-option></mat-option>
+              <mat-option *ngFor="let role of roles" [value]="role.id">
+                {{ role.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error>
+              Required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <mat-divider></mat-divider>
+        <mat-card-actions>
+          <div class="pad-sm text-center">
+            <button type="submit"
+                    mat-raised-button
+                    color="primary"
+                    [disabled]="!form.valid">
+              SAVE
+            </button>
+          </div>
+        </mat-card-actions>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</form>

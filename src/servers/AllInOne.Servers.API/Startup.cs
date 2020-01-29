@@ -2,7 +2,9 @@ using AllInOne.Api.SignalR;
 using AllInOne.Api.SignalR.Hubs;
 using AllInOne.Common.Authentication.Extensions;
 using AllInOne.Common.Settings.Extensions;
+using AllInOne.Common.Settings.HealthChecks;
 using AllInOne.Common.Smtp.Configuration;
+using AllInOne.Common.Smtp.HealthChecks;
 using AllInOne.Domains.Core.Identity.Configuration;
 using AllInOne.Domains.Core.Identity.Entities;
 using AllInOne.Domains.Infrastructure.SqlServer;
@@ -54,7 +56,7 @@ namespace AllInOne.Servers.API
             services
                 .AddOptions()
                 .ConfigureAndValidate<IdentitySettings>(Configuration)
-                .ConfigureAndValidate<SmtpSettings>(Configuration);
+                .Configure<SmtpSettings>(Configuration.GetSection("Smtp"));
 
             // Dependancy Injection
             services.AddAutofac();
@@ -141,6 +143,8 @@ namespace AllInOne.Servers.API
                 }
             });
             services.AddHealthChecks()
+                .AddCheck<SmtpHealthCheck>("SMTP")
+                .AddCheckSettings<IdentitySettings>()
                 .AddDbContextCheck<AllInOneDbContext>("Default");
 
             // Profiling

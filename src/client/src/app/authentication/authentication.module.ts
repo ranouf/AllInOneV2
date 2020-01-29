@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { PasswordForgottenComponent } from './passwordforgotten/passwordforgotten.component';
 import { ResetPasswordComponent } from './resetpassword/resetpassword.component';
 import { ComponentsModule } from '../components/components.module';
+import { ResendConfirmationComponent } from './resendconfirmation/resendconfirmation.component';
+import { ConfirmEmailComponent } from './confirmemail/confirmemail.component';
 
 
 @NgModule({
@@ -18,7 +20,9 @@ import { ComponentsModule } from '../components/components.module';
     RegisterComponent,
     LoginComponent,
     PasswordForgottenComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    ResendConfirmationComponent,
+    ConfirmEmailComponent,
   ],
   imports: [
     CommonModule,

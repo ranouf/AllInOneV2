@@ -51,9 +51,26 @@ namespace AllInOne.Servers.API.Controllers.Identity
             return Ok();
         }
 
+        [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.InternalServerError)]
+        [Route(Constants.Api.V1.Authentication.ResendEmailConfirmation)]
+        public async Task<IActionResult> ResendEmailConfirmationAsync([FromBody]ResendEmailConfirmationRequestDto dto)
+        {
+            Logger.LogInformation($"{nameof(RegisterUserAsync)}, dto:{dto.ToJson()}");
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            await ValidateEmailConfirmationNeeded(user, dto);
+
+            await _userManager.ReSendEmailConfirmationAsync(user);
+
+            return Ok();
+        }
+
         [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.Unauthorized)]
         [Route(Constants.Api.V1.Authentication.ConfirmRegistrationEmail)]
         public async Task<IActionResult> ConfirmRegistrationEmailAsync([FromBody]ConfirmRegistrationEmailRequestDto dto)
         {
@@ -70,6 +87,7 @@ namespace AllInOne.Servers.API.Controllers.Identity
         [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ApiErrorDto), (int)HttpStatusCode.Unauthorized)]
         [Route(Constants.Api.V1.Authentication.ConfirmInvitationEmail)]
         public async Task<IActionResult> ConfirmInvitationEmailAsync([FromBody]ConfirmInvitationEmailRequestDto dto)
         {

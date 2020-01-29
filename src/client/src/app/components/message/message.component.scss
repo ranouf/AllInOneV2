@@ -22,6 +22,11 @@
   $warn: map-get($theme, warn);
 
   app-message {
+    display: block;
+
+    p:last-child {
+      margin-bottom: inherit;
+    }
 
     &.mat-primary .alert {
       color: mat-color($primary);

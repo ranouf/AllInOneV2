@@ -1,38 +1,43 @@
-﻿using System.Net;
-using System.Net.Mail;
+﻿using MimeKit;
 using System.Threading.Tasks;
 
 namespace AllInOne.Common.Smtp.SmtpClients
 {
     internal class SmtpClient : ISmtpClient
     {
-        private readonly System.Net.Mail.SmtpClient _smtpClient;
+        private readonly MailKit.Net.Smtp.SmtpClient _smtpClient;
 
-        public bool UseDefaultCredentials
+        public bool IsConnected
         {
-            get => _smtpClient.UseDefaultCredentials;
-            set => _smtpClient.UseDefaultCredentials = value;
-        }
-        public bool EnableSsl
-        {
-            get => _smtpClient.EnableSsl;
-            set => _smtpClient.EnableSsl = value;
-        }
-        public ICredentialsByHost Credentials
-        {
-            get => _smtpClient.Credentials;
-            set => _smtpClient.Credentials = value;
+            get
+            {
+                return _smtpClient.IsConnected;
+            }
         }
 
-
-        public SmtpClient(string host, int port)
+        public SmtpClient()
         {
-            _smtpClient = new System.Net.Mail.SmtpClient(host, port);
+            _smtpClient = new MailKit.Net.Smtp.SmtpClient();
         }
 
-        public async Task SendMailAsync(MailMessage message)
+        public async Task ConnectAsync(string host, int port, bool useSsl)
         {
-            await _smtpClient.SendMailAsync(message);
+            await _smtpClient.ConnectAsync(host, port, useSsl);
+        }
+
+        public async Task AuthenticateAsync(string username, string password)
+        {
+            await _smtpClient.AuthenticateAsync(username, password);
+        }
+
+        public async Task SendAsync(MimeMessage message)
+        {
+            await _smtpClient.SendAsync(message);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await _smtpClient.DisconnectAsync(true);
         }
     }
 }

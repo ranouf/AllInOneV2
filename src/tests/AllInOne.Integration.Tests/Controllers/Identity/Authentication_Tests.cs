@@ -25,8 +25,6 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
         [Fact]
         public async Task Should_Register_And_Not_Login_As_Anonymous()
         {
-            TestServerFixture.AddToConfiguration("Identity:EnableConfirmEmailOnRegistration", "false");
-
             // As Anonymous
             TestServerFixture.AuthenticateAsAnonymous();
 
@@ -73,8 +71,6 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
         [Fact]
         public async Task Should_Register_Confirm_And_Login_As_Anonymous()
         {
-            TestServerFixture.AddToConfiguration("Identity:EnableConfirmEmailOnRegistration", "false");
-
             // As Anonymous
             TestServerFixture.AuthenticateAsAnonymous();
 
@@ -94,7 +90,76 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Get token from Logs
-            var log = TestServerFixture.Logs.Last(l => l.Contains("RegistrationEmailConfirmationToken"));
+            var log = TestServerFixture.Logs.Last(l => l.Contains("EmailConfirmationToken"));
+            var token = Regex.Matches(log, @"(?<=\')(.*?)(?=\')").First().Value;
+
+            // Confirm invitation email
+            response = await TestServerFixture.Client.PutAsync(
+                AllInOne.Common.Constants.Api.V1.Authentication.ConfirmRegistrationEmail,
+                Output,
+                new ConfirmRegistrationEmailRequestDto
+                {
+                    Token = token,
+                    Email = NewEmail
+                }
+            );
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Authentication as the new User
+            response = await TestServerFixture.AuthenticateAsAsync(NewEmail, NewPassword, Output);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var dto = await response.ConvertToAsync<LoginResponseDto>(Output);
+            Assert.Equal(NewEmail, dto.CurrentUser.Email);
+            Assert.Equal(NewFirstname, dto.CurrentUser.Firstname);
+            Assert.Equal(NewLastname, dto.CurrentUser.Lastname);
+
+            // As Admin
+            await TestServerFixture.AuthenticateAsAdministratorAsync(Output);
+
+            // Delete User
+            response = await TestServerFixture.Client.DeleteAsync(
+                AllInOne.Common.Constants.Api.V1.User.Url,
+                Output,
+                dto.CurrentUser
+            );
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_Register_Resend_Confirm_And_Login_As_Anonymous()
+        {
+            // As Anonymous
+            TestServerFixture.AuthenticateAsAnonymous();
+
+            // Register 
+            var response = await TestServerFixture.Client.PostAsync(
+                AllInOne.Common.Constants.Api.V1.Authentication.Register,
+                Output,
+                new RegistrationRequestDto
+                {
+                    Email = NewEmail,
+                    Firstname = NewFirstname,
+                    Lastname = NewLastname,
+                    Password = NewPassword,
+                    PasswordConfirmation = NewPassword
+                }
+            );
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Register 
+            response = await TestServerFixture.Client.PostAsync(
+                AllInOne.Common.Constants.Api.V1.Authentication.ResendEmailConfirmation,
+                Output,
+                new ResendEmailConfirmationRequestDto
+                {
+                    Email = NewEmail
+                }
+            );
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Get token from Logs
+            var log = TestServerFixture.Logs.Last(l => l.Contains("EmailConfirmationToken"));
             var token = Regex.Matches(log, @"(?<=\')(.*?)(?=\')").First().Value;
 
             // Confirm invitation email

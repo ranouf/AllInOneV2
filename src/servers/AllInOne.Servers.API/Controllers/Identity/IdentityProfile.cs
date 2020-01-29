@@ -10,7 +10,11 @@ namespace AllInOne.Servers.API.Controllers.Identity
         public IdentityProfile()
         {
             CreateMap<User, UserDto>()
-                .AddFullAuditedBy();
+                .AddFullAuditedBy()
+                .ForMember(
+                    dest => dest.InvitedBy,
+                    opts => opts.MapFrom(src => src.InvitedByUser.FullName)
+                ); 
             CreateMap<Role, RoleDto>();
         }
     }

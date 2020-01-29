@@ -251,8 +251,16 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
             );
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
+            var userDto = await response.ConvertToAsync<UserDto>(Output);
+            Assert.Equal(Email, userDto.Email);
+            Assert.Equal("FirstName", userDto.Firstname);
+            Assert.Equal("LastName", userDto.Lastname);
+            Assert.Equal(Domains.Core.Constants.Roles.Administrator, userDto.RoleName);
+            Assert.False(string.IsNullOrEmpty(userDto.RoleName));
+            Assert.False(string.IsNullOrEmpty(userDto.InvitedBy));
+
             // Get token from Logs
-            var log = TestServerFixture.Logs.Last(l => l.Contains("InvitationEmailConfirmationToken"));
+            var log = TestServerFixture.Logs.Last(l => l.Contains("EmailConfirmationToken"));
             var token = Regex.Matches(log, @"(?<=\')(.*?)(?=\')").First().Value;
 
             // Confirm invitation email

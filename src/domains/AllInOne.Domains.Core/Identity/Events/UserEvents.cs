@@ -8,7 +8,8 @@ namespace AllInOne.Domains.Core.Identity.Events
         public User User { get; set; }
     }
 
-    public class UserRegisteredEvent : UserEvent { }
+    public class UserRegisteredEvent : UserEvent { } 
+    public class UserResendEmailConfirmationEvent : UserEvent { }
 
     public class UserInvitedEvent : UserEvent { }
 

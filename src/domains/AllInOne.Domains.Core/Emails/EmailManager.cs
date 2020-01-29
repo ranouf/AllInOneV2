@@ -28,8 +28,8 @@ namespace AllInOne.Domains.Core.Emails
             var confirmEmailUrl = new Uri(_session.BaseUrl)
                 .Append("/authentication")
                 .Append("/confirmemail")
-                .Append(token)
-                .Append(user.Email);
+                .AddQueryStringParameter("token", token)
+                .AddQueryStringParameter("email", user.Email);
 
             await SendEmailAsync(
                 user.Email,
@@ -71,8 +71,8 @@ namespace AllInOne.Domains.Core.Emails
             var invitationUrl = new Uri(_session.BaseUrl)
                 .Append("/authentication")
                 .Append("/invite")
-                .Append(token)
-                .Append(user.Email);
+                .AddQueryStringParameter("token", token)
+                .AddQueryStringParameter("email", user.Email);
 
             await SendEmailAsync(
                 user.Email,
