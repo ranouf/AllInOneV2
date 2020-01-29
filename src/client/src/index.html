@@ -8,8 +8,87 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style type="text/css">
+    @keyframes ldio-rhnf2pg3m8e {
+      0% {
+        transform: rotate(0deg)
+      }
+
+      50% {
+        transform: rotate(180deg)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .ldio-rhnf2pg3m8e div {
+      position: absolute;
+      animation: ldio-rhnf2pg3m8e 1s linear infinite;
+      width: 160px;
+      height: 160px;
+      top: 20px;
+      left: 20px;
+      border-radius: 50%;
+      box-shadow: 0 4px 0 0 #e15b64;
+      transform-origin: 80px 82px;
+    }
+
+    .loadingio-spinner-eclipse-105kyn43mur {
+      width: 200px;
+      height: 200px;
+      display: inline-block;
+      overflow: hidden;
+      background: none;
+      position: absolute; /*it can be fixed too*/
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      /*this to solve "the content will not be cut when the window is smaller than the content": */
+      max-width: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .ldio-rhnf2pg3m8e {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform: translateZ(0) scale(1);
+      backface-visibility: hidden;
+      transform-origin: 0 0; /* see note above */
+    }
+
+    .title {
+      position: absolute;
+      left: 0;
+      top: 45%;
+      text-align: center;
+      margin: auto;
+      width: 100%;
+      bottom: 0;
+      font-weight:bold;
+    }
+
+    .ldio-rhnf2pg3m8e div {
+      box-sizing: content-box;
+    }
+  </style>
 </head>
 <body>
+
+  <div class="loadingio-spinner-eclipse-105kyn43mur">
+    <div class="title">
+      All In One
+    </div>
+    <div class="ldio-rhnf2pg3m8e">
+      <div></div>
+    </div>
+  </div>
   <app-root></app-root>
 </body>
 </html>

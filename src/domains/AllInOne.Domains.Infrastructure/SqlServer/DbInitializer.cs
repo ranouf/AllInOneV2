@@ -73,7 +73,7 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
             {
                 logger.LogInformation("Start seeding users.");
                 var context = services.GetRequiredService<AllInOneDbContext>();
-                var defaultUserAccountsSettings = services.GetRequiredService<IOptions<DefaultUserAccountsSettings>>().Value;
+                var defaultUserAccountsSettings = services.GetRequiredService<IOptions<IdentitySettings>>().Value;
 
                 var roleManager = services.GetRequiredService<IRoleManager>();
                 var userManager = services.GetRequiredService<IUserManager>();
@@ -86,12 +86,11 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
                             new User(
                                 userAccount.Email,
                                 userAccount.Firstname,
-                                userAccount.Lastname
+                                userAccount.Lastname,
+                                emailConfirmed: true
                             ),
                             userAccount.Password,
-                            role,
-                            sendEmail: false,
-                            raiseEvent: false
+                            role
                         );
                     }
                 }

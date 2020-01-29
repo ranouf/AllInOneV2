@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AllInOne.Common.Logging
 {
-    public interface ILoggerService : IAsyncDisposable
+    public interface ILoggerService : IAsyncDisposable, IDisposable
     {
         void LogTrace(string message);
         void LogTrace(string message, IDictionary<string, string> properties = null);

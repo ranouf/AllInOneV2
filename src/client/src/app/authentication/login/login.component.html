@@ -1,7 +1,7 @@
 <td-layout-card-over cardTitle="Login"
                      cardSubtitle="Please enter your credentials to login."
                      tdMediaToggle="gt-xs">
-  <form [formGroup]="form" (ngSubmit)="login(form.value)" *ngIf="form">
+  <form [formGroup]="form" (ngSubmit)="login()" *ngIf="form">
     <mat-card-content class="push-bottom-none">
       <div layout="row" flex>
         <mat-form-field flex>
@@ -35,17 +35,26 @@
           </mat-error>
         </mat-form-field>
       </div>
-      <div layout="row" flex>
-        <a [routerLink]="['/authentication/register']">Create a new account</a>
+      <div layout="row" class="justify-content-between" flex>
+        <a [routerLink]="['/authentication/passwordforgotten']">Password forgotten</a>
       </div>
-      <td-message label="Login failed"
-                  color="warn"
-                  icon="error"
-                  class="push-top"
-                  [@tdCollapse]="{ value: errorMessage == null, params: { duration: 100 }}"
-                  [@tdHeadshake]="{ value: errorMessage != null, params: { delay:100 }}"
-                  [sublabel]="errorMessage">
-      </td-message>
+      <br />
+      <app-message title="Login failed"
+                   color="warn"
+                   icon="error"
+                   [@tdCollapse]="{ value: errorMessage == null, params: { duration: 100 }}"
+                   [@tdHeadshake]="{ value: errorMessage != null, params: { delay:100 }}">
+        <ng-container [ngSwitch]="errorMessage">
+          <ng-container *ngSwitchCase="'Email not confirmed'">
+            <p>Your email is still not confirmed.</p>
+            <hr />
+            <a [routerLink]="['/authentication/resendconfirmation']">Send a new confirmation email</a>
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            <p>{{errorMessage}}</p>
+          </ng-container>
+        </ng-container>
+      </app-message>
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions>
@@ -64,6 +73,10 @@
           <mat-icon>cancel</mat-icon>
           Cancel
         </button>
+      </div>
+      <div class="pad-sm text-center">
+        or
+        <a [routerLink]="['/authentication/register']">Create a new account</a>
       </div>
     </mat-card-actions>
   </form>

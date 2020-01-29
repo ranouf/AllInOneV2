@@ -6,9 +6,12 @@ This project is a base for future projects. It will include:
 	- Sql Server Database
 	- Entity Framework
 	- AutoMapper
-	- Dependency Injection using Autofac
+	- Autofac
 	- Swagger
 	- Miniprofiler
+	- MailKit
+	- HealthCheck
+	- SignalR
 	
 - Test Integration to test the API
 

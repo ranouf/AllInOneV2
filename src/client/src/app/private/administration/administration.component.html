@@ -1,0 +1,20 @@
+<td-layout-manage-list #manageList
+                       [opened]="media.registerQuery('gt-sm') | async"
+                       [mode]="(media.registerQuery('gt-sm') | async) ? 'side' :  'over'"
+                       [sidenavWidth]="(media.registerQuery('gt-xs') | async) ? '257px' : '100%'">
+  <mat-toolbar td-sidenav-content><span>Administration</span></mat-toolbar>
+  <mat-nav-list td-sidenav-content [tdLayoutNavListClose]="!media.query('gt-sm')">
+    <a mat-list-item [routerLink]="['/private/administration/users']" [tdLayoutManageListToggle]="!(media.registerQuery('gt-sm') | async)">
+      <mat-icon matListAvatar>supervisor_account</mat-icon>
+      <h3 matLine> Users </h3>
+      <p matLine> Manage your users </p>
+    </a>
+  </mat-nav-list>
+  <mat-toolbar>
+    <button mat-button tdLayoutManageListToggle [hideWhenOpened]="true">
+      <mat-icon matListAvatar>keyboard_arrow_right</mat-icon>
+    </button>
+    <span *ngIf="!manageList.opened">Administration</span>
+  </mat-toolbar>
+  <router-outlet></router-outlet>
+</td-layout-manage-list>

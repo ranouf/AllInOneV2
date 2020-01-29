@@ -7,13 +7,22 @@ import { AngularModule } from '../modules/angular.module';
 import { AngularMaterialModule } from '../modules/angular-material.module';
 import { CovalentModule } from '../modules/covalent.module';
 import { CommonModule } from '@angular/common';
+import { PasswordForgottenComponent } from './passwordforgotten/passwordforgotten.component';
+import { ResetPasswordComponent } from './resetpassword/resetpassword.component';
+import { ComponentsModule } from '../components/components.module';
+import { ResendConfirmationComponent } from './resendconfirmation/resendconfirmation.component';
+import { ConfirmEmailComponent } from './confirmemail/confirmemail.component';
 
 
 @NgModule({
   declarations: [
     AuthenticationComponent,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    PasswordForgottenComponent,
+    ResetPasswordComponent,
+    ResendConfirmationComponent,
+    ConfirmEmailComponent,
   ],
   imports: [
     CommonModule,
@@ -21,6 +30,7 @@ import { CommonModule } from '@angular/common';
     AngularModule,
     CovalentModule,
     AngularMaterialModule,
+    ComponentsModule
   ],
   providers: [
   ]

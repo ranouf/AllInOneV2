@@ -1,0 +1,13 @@
+<td-layout-card-over cardTitle="Validation"
+                     cardSubtitle="We are validating your account, please be patient."
+                     tdMediaToggle="gt-xs">
+  <mat-card-content class="push-bottom-none">
+    <app-message title="Confirmation failed"
+                 color="warn"
+                 icon="error"
+                 [@tdCollapse]="{ value: errorMessage == null, params: { duration: 100 }}"
+                 [@tdHeadshake]="{ value: errorMessage != null, params: { delay:100 }}">
+      <p>{{errorMessage}}</p>
+    </app-message>
+  </mat-card-content>
+</td-layout-card-over>

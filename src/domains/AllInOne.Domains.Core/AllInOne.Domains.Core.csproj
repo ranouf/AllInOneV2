@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,6 +17,8 @@
     <ProjectReference Include="..\..\common\AllInOne.Common.Events\AllInOne.Common.Events.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common.Exceptions\AllInOne.Common.Exceptions.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common.Paging\AllInOne.Common.Paging.csproj" />
+    <ProjectReference Include="..\..\common\AllInOne.Common.Session\AllInOne.Common.Session.csproj" />
+    <ProjectReference Include="..\..\common\AllInOne.Common.Smtp\AllInOne.Common.Smtp.csproj" />
   </ItemGroup>
 
 </Project>

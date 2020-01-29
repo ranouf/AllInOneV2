@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.5.0" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllInOne.Common.Extensions\AllInOne.Common.Extensions.csproj" />
+    <ProjectReference Include="..\AllInOne.Common.Logging\AllInOne.Common.Logging.csproj" />
+    <ProjectReference Include="..\AllInOne.Common.Settings\AllInOne.Common.Settings.csproj" />
+  </ItemGroup>
+
+</Project>

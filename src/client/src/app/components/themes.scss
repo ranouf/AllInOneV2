@@ -1,0 +1,7 @@
+@import './message/message.component.scss';
+
+// Create a theme.
+@mixin themes($theme, $config: null) {
+  //@include message-typography($config);
+  @include app-message-theme($theme);
+}

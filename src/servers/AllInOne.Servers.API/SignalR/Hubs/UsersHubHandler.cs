@@ -12,7 +12,9 @@ namespace AllInOne.Api.SignalR.Hubs
     public class UsersHubHandler :
         BaseHubHandler<BaseHub>,
         IEventHandler<UserRegisteredEvent>,
-        IEventHandler<UserCreatedEvent>,
+        IEventHandler<UserInvitedEvent>,
+        IEventHandler<RegistrationEmailConfirmedEvent>,
+        IEventHandler<InvitationEmailConfirmedEvent>,
         IEventHandler<UserLockedEvent>,
         IEventHandler<UserUnlockedEvent>,
         IEventHandler<UserUpdatedEvent>,
@@ -27,11 +29,6 @@ namespace AllInOne.Api.SignalR.Hubs
         }
 
         public async Task HandleAsync(UserRegisteredEvent args)
-        {
-            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
-        }
-
-        public async Task HandleAsync(UserCreatedEvent args)
         {
             await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
         }
@@ -52,6 +49,21 @@ namespace AllInOne.Api.SignalR.Hubs
         }
 
         public async Task HandleAsync(UserDeletedEvent args)
+        {
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+        }
+
+        public async Task HandleAsync(UserInvitedEvent args)
+        {
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+        }
+
+        public async Task HandleAsync(RegistrationEmailConfirmedEvent args)
+        {
+            await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
+        }
+
+        public async Task HandleAsync(InvitationEmailConfirmedEvent args)
         {
             await SendNotificationAsync<Guid?, User, UserDto>(args, args.User, args.User.FullName);
         }

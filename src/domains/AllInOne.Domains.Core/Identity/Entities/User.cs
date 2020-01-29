@@ -47,17 +47,26 @@ namespace AllInOne.Domains.Core.Identity.Entities
         public DateTimeOffset? DeletedAt { get; set; }
         public Guid? DeletedByUserId { get; set; }
         public virtual User DeletedByUser { get; set; }
+        public Guid? InvitedByUserId { get; set; }
+        public virtual User InvitedByUser { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
 
         protected User() { }
 
-        public User(string email, string firstname, string lastname)
+        public User(string email, string firstname, string lastname, bool emailConfirmed = false)
         {
             UserName = email;
             Email = email;
             Firstname = firstname;
             Lastname = lastname;
+            EmailConfirmed = emailConfirmed;
             GenerateNewSecurityStamp();
+        }
+
+        public User(string email, string firstname, string lastname, User invitedByUser, bool emailConfirmed = false) 
+            : this(email,firstname,lastname,emailConfirmed)
+        {
+            InvitedByUserId = invitedByUser.Id;
         }
 
         public bool Equals(IEntity x, IEntity y)

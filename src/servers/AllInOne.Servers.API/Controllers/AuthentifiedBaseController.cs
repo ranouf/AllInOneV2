@@ -1,9 +1,9 @@
-﻿using AllInOne.Common.Session;
+﻿using AllInOne.Common.Logging;
+using AllInOne.Common.Session;
 using AllInOne.Domains.Core.Identity;
 using AllInOne.Domains.Core.Identity.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace AllInOne.Servers.API.Controllers
@@ -27,7 +27,7 @@ namespace AllInOne.Servers.API.Controllers
             IUserSession session,
             IUserManager userManager,
             IMapper mapper,
-            ILogger logger
+            ILoggerService logger
         ) : base(mapper, logger)
         {
             _userManager = userManager;

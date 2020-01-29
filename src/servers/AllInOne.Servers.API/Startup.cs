@@ -2,6 +2,9 @@ using AllInOne.Api.SignalR;
 using AllInOne.Api.SignalR.Hubs;
 using AllInOne.Common.Authentication.Extensions;
 using AllInOne.Common.Settings.Extensions;
+using AllInOne.Common.Settings.HealthChecks;
+using AllInOne.Common.Smtp.Configuration;
+using AllInOne.Common.Smtp.HealthChecks;
 using AllInOne.Domains.Core.Identity.Configuration;
 using AllInOne.Domains.Core.Identity.Entities;
 using AllInOne.Domains.Infrastructure.SqlServer;
@@ -50,16 +53,21 @@ namespace AllInOne.Servers.API
         public void ConfigureServices(IServiceCollection services)
         {
             // Settings
-            services.AddOptions();
-            services.ConfigureAndValidate<DefaultUserAccountsSettings>(Configuration);
-
-            SetUpDataBase(services);
+            services
+                .AddOptions()
+                .ConfigureAndValidate<IdentitySettings>(Configuration)
+                .Configure<SmtpSettings>(Configuration.GetSection("Smtp"));
 
             // Dependancy Injection
             services.AddAutofac();
 
             // Identity
-            services.AddIdentity<User, Role>()
+            services
+                .AddIdentity<User, Role>(options =>
+                {
+                    options.SignIn.RequireConfirmedEmail = true;
+                    options.Lockout.AllowedForNewUsers = false;
+                })
                 .AddEntityFrameworkStores<AllInOneDbContext>()
                 .AddDefaultTokenProviders()
                 .AddUserStore<UserStore<User, Role, AllInOneDbContext, Guid, IdentityUserClaim<Guid>, UserRole, IdentityUserLogin<Guid>, IdentityUserToken<Guid>, IdentityRoleClaim<Guid>>>()
@@ -135,6 +143,8 @@ namespace AllInOne.Servers.API
                 }
             });
             services.AddHealthChecks()
+                .AddCheck<SmtpHealthCheck>("SMTP")
+                .AddCheckSettings<IdentitySettings>()
                 .AddDbContextCheck<AllInOneDbContext>("Default");
 
             // Profiling
@@ -146,14 +156,18 @@ namespace AllInOne.Servers.API
             // Automapper
             services.AddAutoMapper(typeof(Startup).Assembly);
 
+            // Controllers
             services.AddControllers();
+
+            // OverWritable services (for testing)
+            SetUpDataBase(services);
         }
 
-        [SuppressMessage("Performance", 
-            "CA1822:Mark members as static", 
+        [SuppressMessage("Performance",
+            "CA1822:Mark members as static",
             Justification = "ConfigureContainer must not be static to be called by Integration Tests"
         )]
-        public void ConfigureContainer(ContainerBuilder builder)
+        public virtual void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule<ApiModule>();
         }

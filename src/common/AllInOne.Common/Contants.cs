@@ -14,9 +14,12 @@
                 {
                     public const string Url = "/api/v1/authentication";
                     public const string Register = Url + "/register";
+                    public const string ConfirmRegistrationEmail = Url + "/confirmregistrationemail";
+                    public const string ConfirmInvitationEmail = Url + "/confirminvitationemail";
+                    public const string ResendEmailConfirmation = Url + "/resendemailconfirmation";
                     public const string ResetPassword = Url + "/resetpassword";
                     public const string PasswordForgotten = Url + "/passwordforgotten";
-                    public const string Login = Url + "/login";
+                    public const string Login = Url + "/login";                    
                 }
 
                 public static class Account

@@ -54,6 +54,7 @@ namespace AllInOne.Domains.Infrastructure.SqlServer
                 entity.HasOne(u => u.CreatedByUser);
                 entity.HasOne(u => u.UpdatedByUser);
                 entity.HasOne(u => u.DeletedByUser);
+                entity.HasOne(u => u.InvitedByUser);
                 entity.HasIndex(u => u.Email);
                 entity.HasIndex(u => u.NormalizedEmail);
                 entity.HasIndex(u => u.IsDeleted);

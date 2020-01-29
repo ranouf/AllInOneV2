@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using Xunit.Abstractions;
+using System.Collections.Generic;
 
-namespace AllInOne.Common.Testing.Xunit
+namespace AllInOne.Integration.Tests.InMemory
 {
-    public class XunitLogger : ILogger
+    public class InMemoryLogger : ILogger
     {
-        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly List<string> _output;
         private readonly string _categoryName;
 
-        public XunitLogger(ITestOutputHelper testOutputHelper, string categoryName)
+        public InMemoryLogger(List<string> output, string categoryName)
         {
-            _testOutputHelper = testOutputHelper;
+            _output = output;
             _categoryName = categoryName;
         }
 
@@ -25,9 +25,9 @@ namespace AllInOne.Common.Testing.Xunit
         {
             try
             {
-                _testOutputHelper.WriteLine($"{_categoryName} [{eventId}] {formatter(state, exception)}");
+                _output.Add($"{_categoryName} [{eventId}] {formatter(state, exception)}");
                 if (exception != null)
-                    _testOutputHelper.WriteLine(exception.ToString());
+                    _output.Add(exception.ToString());
             }
             catch (Exception e)
             {

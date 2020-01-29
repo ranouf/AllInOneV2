@@ -1,9 +1,10 @@
-﻿using AllInOne.Servers.API.Controllers.Dtos.Entities;
+﻿using AllInOne.Servers.API.Controllers.Dtos;
+using AllInOne.Servers.API.Controllers.Dtos.Entities;
 using System;
 
 namespace AllInOne.Servers.API.Controllers.Identity.Dtos
 {
-    public class UserDto : EntityDto<Guid?>, IEntityDto<Guid?>, IAuditedDto, IDeleteAuditedDto, IComparable
+    public class UserDto : EntityDto<Guid?>, IEntityDto<Guid?>, IAuditedDto, IDeleteAuditedDto, IComparable, IDto
     {
         public string Firstname { get; set; }
         public string Lastname { get; set; }
@@ -18,6 +19,7 @@ namespace AllInOne.Servers.API.Controllers.Identity.Dtos
         public string CreatedAt { get; set; }
         public string UpdatedAt { get; set; }
         public string DeletedAt { get; set; }
+        public string InvitedBy { get; set; }
 
         public int CompareTo(object obj)
         {

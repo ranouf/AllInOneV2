@@ -13,6 +13,18 @@
          (click)="navigation.toggle()">
         <mat-icon>home</mat-icon>Home
       </a>
+      <a mat-list-item
+         [routerLink]="['/private/']"
+         (click)="navigation.toggle()"
+         *ngIf="currentUser">
+        <mat-icon>dashboard</mat-icon>Dashboard
+      </a>
+      <a mat-list-item
+         [routerLink]="['/private/administration/']"
+         (click)="navigation.toggle()"
+         *ngIf="currentUser ? (['Administrator'] | isInRole) : false">
+        <mat-icon>supervisor_account_circle</mat-icon>Administration
+      </a>
     </mat-nav-list>
   </td-navigation-drawer>
   <td-layout-nav toolbarTitle="AllInOne" navigationRoute="/">
@@ -30,12 +42,12 @@
         <mat-icon>account_circle</mat-icon>
       </button>
       <mat-menu x-position="before" #topMenu="matMenu">
-        <a [routerLink]="['/private/myaccount']"
-           mat-menu-item
-           matTooltip="My account">
+        <button [routerLink]="['/private/myaccount']"
+                mat-menu-item
+                matTooltip="My account">
           <mat-icon>person</mat-icon>
           My account
-        </a>
+        </button>
         <button (click)="authenticationService.logout()" mat-menu-item
                 type="button">
           <mat-icon>exit_to_app</mat-icon>

@@ -9,6 +9,9 @@ $font-size-base: 0.8rem;
 @import '~@angular/material/theming';
 @import '~@covalent/core/theming/all-theme';
 
+
+@import 'src/app/components/themes.scss';
+
 // Define a custom typography config that overrides the font-family
 // or any typography level.
 $typography: mat-typography-config( $font-family: 'Roboto, monospace', $headline: mat-typography-level(32px, 48px, 700) );
@@ -26,6 +29,23 @@ $theme: mat-light-theme($primary, $accent, $warn);
 @include covalent-theme($theme, $typography); // $typography is an **optional** argument for the covalent-theme
 
 
+@include themes($theme, $typography);
+
 td-message {
     overflow:hidden;
+}
+
+td-search-box .mat-form-field-appearance-legacy .mat-form-field-infix {
+  padding-bottom: inherit;
+  padding-top: 5px !important;
+}
+
+span mat-icon {
+  font-size: 18px;
+  vertical-align: bottom;
+  margin-right: 3px;
+}
+
+*:focus, *:active {
+  outline: none!important;
 }

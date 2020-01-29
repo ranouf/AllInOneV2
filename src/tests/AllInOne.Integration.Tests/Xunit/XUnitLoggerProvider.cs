@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 using Xunit.Abstractions;
 
-namespace AllInOne.Common.Testing.Xunit
+namespace AllInOne.Integration.Tests.Xunit
 {
     public class XunitLoggerProvider : ILoggerProvider
     {
@@ -16,6 +17,17 @@ namespace AllInOne.Common.Testing.Xunit
             => new XunitLogger(_testOutputHelper, categoryName);
 
         public void Dispose()
-        { }
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                //nothing
+            }
+        }
     }
 }

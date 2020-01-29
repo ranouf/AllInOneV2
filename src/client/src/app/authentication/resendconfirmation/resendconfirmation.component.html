@@ -1,0 +1,51 @@
+<td-layout-card-over cardTitle="Confirm your email"
+                     cardSubtitle="Please enter your email to receive a new confirmation."
+                     tdMediaToggle="gt-xs">
+  <form [formGroup]="form" (ngSubmit)="resendConfirmation()" *ngIf="form">
+    <mat-card-content class="push-bottom-none">
+      <div layout="row" flex>
+        <mat-form-field flex>
+          <input name="email"
+                 formControlName="email"
+                 matInput
+                 #emailElement
+                 type="text"
+                 placeholder="Email"
+                 required>
+          <mat-error>
+            <div *ngIf="form.get('email').errors?.required">
+              this field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <td-message label="Resend email confirmation failed"
+                  color="warn"
+                  icon="error"
+                  [@tdCollapse]="{ value: errorMessage == null, params: { duration: 100 }}"
+                  [@tdHeadshake]="{ value: errorMessage != null, params: { delay:100 }}"
+                  [sublabel]="errorMessage"
+                  [style.overflow]="'hidden'">
+      </td-message>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions>
+      <div class="pad-sm text-center">
+        <button mat-raised-button
+                color="primary"
+                [disabled]="!form.valid"
+                type="submit">
+          <mat-icon>account_circle</mat-icon>
+          Send confirmation
+        </button>
+        <button mat-raised-button
+                type="reset"
+                color="accent"
+                (click)="cancel()">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </div>
+    </mat-card-actions>
+  </form>
+</td-layout-card-over>
