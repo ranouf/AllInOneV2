@@ -73,8 +73,10 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
                 new ChangeProfileRequestDto
                 {
                     Firstname = NewFirstname,
-                    Lastname = NewLastname
-                }
+                    Lastname = NewLastname,
+                    ProfileImage = Logo
+                },
+                Format.FormData
             );
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -90,7 +92,8 @@ namespace AllInOne.Integration.Tests.Controllers.Identity
                 {
                     Firstname = TestUserDataBuilder.AdministratorFirstname,
                     Lastname = TestUserDataBuilder.AdministratorLastname
-                }
+                },
+                Format.FormData
             );
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

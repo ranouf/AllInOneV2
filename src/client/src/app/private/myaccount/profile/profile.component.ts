@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../../../services/authentication/authentication.service';
 import { TdLoadingService, tdHeadshakeAnimation, tdCollapseAnimation, tdFadeInOutAnimation } from '@covalent/core';
-import { AccountService, ChangeProfileRequestDto } from '../../../services/api/api.services';
+import { AccountService, FileParameter, UserDto } from '../../../services/api/api.services';
 import { NotificationsService } from 'angular2-notifications';
 
 @Component({
@@ -10,7 +10,7 @@ import { NotificationsService } from 'angular2-notifications';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
   animations: [
-    tdHeadshakeAnimation, 
+    tdHeadshakeAnimation,
     tdCollapseAnimation,
     tdFadeInOutAnimation,
   ],
@@ -18,6 +18,9 @@ import { NotificationsService } from 'angular2-notifications';
 export class ProfileComponent implements OnInit {
   public form: FormGroup;
   public errorMessage: string;
+  public profileImage: FileParameter;
+  public selectedProfileImage: string;
+  public currentUser: UserDto;
 
   constructor(
     private fb: FormBuilder,
@@ -36,12 +39,43 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = null;
   }
 
+  public async onFileChanged(event) {
+    console.log('[image-upload]', event);
+    let selectedFile = <File>event.target.files[0];
+    this.profileImage = <FileParameter>{
+      data: selectedFile,
+      fileName: selectedFile.name
+    };
+    
+    this.selectedProfileImage = await this.readFile(selectedFile);
+  }
+
+  public readFile(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      var fr = new FileReader();
+      fr.onload = () => {
+        resolve(fr.result.toString())
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+
+  remove() {
+    this.selectedProfileImage = null;
+  }
+
   update() {
     this.reset();
     this.loadingService.register();
-    this.accountService.updateProfile(<ChangeProfileRequestDto>this.form.value)
+    this.accountService.updateProfile(
+      this.form.get('firstname').value,
+      this.form.get('lastname').value,
+      this.profileImage
+    )
       .subscribe(response => {
         this.authenticationService.setCurrentUser(response);
+        this.currentUser = this.authenticationService.currentUser.value
+        this.remove();
         this.notificationsService.success(
           "Profile updated",
           "By " + this.authenticationService.currentUser.value.fullName
@@ -55,9 +89,8 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit() {
-    let currentUser = this.authenticationService.currentUser
-    this.form.patchValue({ firstname: currentUser.value.firstname });
-    this.form.patchValue({ lastname: currentUser.value.lastname });
+    this.currentUser = this.authenticationService.currentUser.value
+    this.form.patchValue({ firstname: this.currentUser.firstname });
+    this.form.patchValue({ lastname: this.currentUser.lastname });
   }
-
 }

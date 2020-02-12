@@ -4,14 +4,16 @@ using AllInOne.Domains.Infrastructure.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AllInOne.Domains.Infrastructure.Migrations
 {
     [DbContext(typeof(AllInOneDbContext))]
-    partial class AllInOneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200130194823_Add User.ProfileImageUrl")]
+    partial class AddUserProfileImageUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

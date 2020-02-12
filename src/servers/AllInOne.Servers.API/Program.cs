@@ -1,5 +1,6 @@
 using AllInOne.Common.Logging;
 using AllInOne.Common.Settings;
+using AllInOne.Common.Storage;
 using AllInOne.Domains.Infrastructure.SqlServer;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +27,7 @@ namespace AllInOne.Servers.API
 
                 ValidateSettings(services, logger);
                 await InitializeDataBaseAsync(services, logger);
+                await InitializeStorage(services, logger);
 
                 try
                 {
@@ -102,7 +104,23 @@ namespace AllInOne.Servers.API
             }
             catch (Exception ex)
             {
-                logger.LogError("An error occurred while initialization the database.", ex);
+                logger.LogError("An error occurred while initializing the database.", ex);
+                throw;
+            }
+        }
+
+        private static async Task InitializeStorage(IServiceProvider services, ILoggerService<Program> logger)
+        {
+            try
+            {
+                logger.LogInformation("Starting the storage initialization.");
+                var storageService = services.GetRequiredService<IStorageService>();
+                await storageService.CreateIfNotExistsAsync();
+                logger.LogInformation("The storage initialization has been done.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("An error occurred while initializing the storage.", ex);
                 throw;
             }
         }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AuthenticationService } from '../../../services/authentication/authentication.service';
 import { TdLoadingService, tdHeadshakeAnimation, tdCollapseAnimation,  } from '@covalent/core';
-import { AccountService, ChangeProfileRequestDto, ChangePasswordRequestDto } from '../../../services/api/api.services';
+import { AccountService, ChangePasswordRequestDto } from '../../../services/api/api.services';
 import { NotificationsService } from 'angular2-notifications';
 
 @Component({

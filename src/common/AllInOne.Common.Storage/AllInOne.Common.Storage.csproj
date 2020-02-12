@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.AzureStorage" Version="3.0.1" />
+    <PackageReference Include="Autofac" Version="5.0.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllInOne.Common.Logging\AllInOne.Common.Logging.csproj" />
+  </ItemGroup>
+
+</Project>
