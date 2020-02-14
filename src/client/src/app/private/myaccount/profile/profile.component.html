@@ -4,47 +4,77 @@
     <mat-card-subtitle>Please fill the fields to update your profile.</mat-card-subtitle>
     <mat-divider></mat-divider>
     <mat-card-content>
-      <div layout="row" flex>
-        <mat-form-field flex>
-          <input #firstname
-                 name="firstname"
-                 matInput
-                 type="text"
-                 maxlength="50"
-                 placeholder="Firstname"
-                 formControlName="firstname"
-                 required />
-          <mat-error>
-            <div *ngIf="form.get('firstname').errors?.required">
-              this field is required.
-            </div>
-            <div *ngIf="form.get('firstname').errors?.maxlength">
-              max length is {{form.get('firstname').errors?.maxlength.requiredLength}}.
-            </div>
-          </mat-error>
-          <mat-hint>{{firstname.value.length}} / 50</mat-hint>
-        </mat-form-field>
-      </div>
-      <div layout="row" flex>
-        <mat-form-field flex>
-          <input #lastname
-                 name="lastname"
-                 matInput
-                 type="text"
-                 maxlength="50"
-                 placeholder="Lastname"
-                 formControlName="lastname"
-                 required />
-          <mat-error>
-            <div *ngIf="form.get('lastname').errors?.required">
-              this field is required.
-            </div>
-            <div *ngIf="form.get('lastname').errors?.maxlength">
-              max length is {{form.get('lastname').errors?.maxlength.requiredLength}}.
-            </div>
-          </mat-error>
-          <mat-hint>{{lastname.value.length}} / 50</mat-hint>
-        </mat-form-field>
+      <div layout-gt-xs="row" layout-xs="column">
+        <div layout="column" flex>
+          <mat-form-field>
+            <input #firstname
+                   name="firstname"
+                   matInput
+                   type="text"
+                   maxlength="50"
+                   placeholder="Firstname"
+                   formControlName="firstname"
+                   required />
+            <mat-error>
+              <div *ngIf="form.get('firstname').errors?.required">
+                this field is required.
+              </div>
+              <div *ngIf="form.get('firstname').errors?.maxlength">
+                max length is {{form.get('firstname').errors?.maxlength.requiredLength}}.
+              </div>
+            </mat-error>
+            <mat-hint>{{firstname.value.length}} / 50</mat-hint>
+          </mat-form-field>
+          <mat-form-field>
+            <input #lastname
+                   name="lastname"
+                   matInput
+                   type="text"
+                   maxlength="50"
+                   placeholder="Lastname"
+                   formControlName="lastname"
+                   required />
+            <mat-error>
+              <div *ngIf="form.get('lastname').errors?.required">
+                this field is required.
+              </div>
+              <div *ngIf="form.get('lastname').errors?.maxlength">
+                max length is {{form.get('lastname').errors?.maxlength.requiredLength}}.
+              </div>
+            </mat-error>
+            <mat-hint>{{lastname.value.length}} / 50</mat-hint>
+          </mat-form-field>
+        </div>
+        <div layout="column" flex="280px" class="profileImage push-left">
+          <mat-icon *ngIf="currentUser && !currentUser.profileImageUrl && !selectedProfileImage">person</mat-icon>
+          <img [src]="currentUser.profileImageUrl"
+               *ngIf="currentUser && currentUser.profileImageUrl && !selectedProfileImage" />
+          <img [src]="selectedProfileImage"
+               *ngIf="selectedProfileImage" />
+          <div class="actions" flex layout="row">
+            <button type="button"
+                    (click)="fileInput.click()"
+                    (keyup.enter)="fileInput.click()"
+                    class="push-left"
+                    mat-raised-button
+                    color="primary">
+              <mat-icon>add_a_photo</mat-icon>
+            </button>
+            <button type="button"
+                    class="push-left"
+                    (click)="remove()"
+                    mat-raised-button
+                    color="primary"
+                    *ngIf="currentUser && selectedProfileImage">
+              <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+          </div>
+          <input style="display: none"
+                 type="file"
+                 (change)="onFileChanged($event)"
+                 accept="image/*"
+                 #fileInput>
+        </div>
       </div>
       <td-message label="Update profile failed"
                   color="warn"

@@ -8,6 +8,7 @@ namespace AllInOne.Servers.API.Controllers.Identity.Dtos
     {
         public string Firstname { get; set; }
         public string Lastname { get; set; }
+        public string ProfileImageUrl { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Description { get; set; }

@@ -26,7 +26,7 @@ namespace AllInOne.Integration.Tests
 
         public override void ConfigureContainer(ContainerBuilder builder)
         {
-            base.ConfigureContainer(builder);
+            base.ConfigureContainer(builder); 
             builder.RegisterType<MockSmtpClientFactory>().As<ISmtpClientFactory>();
         }
     }

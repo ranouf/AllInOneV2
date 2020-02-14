@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\common\AllInOne.Common.Paging\AllInOne.Common.Paging.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common.Session\AllInOne.Common.Session.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common.Smtp\AllInOne.Common.Smtp.csproj" />
+    <ProjectReference Include="..\..\common\AllInOne.Common.Storage\AllInOne.Common.Storage.csproj" />
   </ItemGroup>
 
 </Project>

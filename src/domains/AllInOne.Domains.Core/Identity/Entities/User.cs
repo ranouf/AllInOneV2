@@ -14,6 +14,8 @@ namespace AllInOne.Domains.Core.Identity.Entities
         public string Firstname { get; private set; }
         [Required]
         public string Lastname { get; private set; }
+        [Required]
+        public string ProfileImageUrl { get; private set; }
 
         private string _fullName;
         public string FullName
@@ -67,6 +69,12 @@ namespace AllInOne.Domains.Core.Identity.Entities
             : this(email,firstname,lastname,emailConfirmed)
         {
             InvitedByUserId = invitedByUser.Id;
+        }
+
+        public User SetProfileImageUrl(Uri profileImageUrl)
+        {
+            ProfileImageUrl = profileImageUrl.AbsoluteUri;
+            return this;
         }
 
         public bool Equals(IEntity x, IEntity y)

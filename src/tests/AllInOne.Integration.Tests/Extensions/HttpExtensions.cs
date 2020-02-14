@@ -12,6 +12,12 @@ using Xunit.Abstractions;
 
 namespace AllInOne.Integration.Tests.Extensions
 {
+    public enum Format
+    {
+        Json = 1,
+        FormData = 2,
+    }
+
     public static class HttpExtensions
     {
         public static async Task<T> ConvertToAsync<T>(this HttpResponseMessage response, ITestOutputHelper output) where T : class
@@ -36,7 +42,7 @@ namespace AllInOne.Integration.Tests.Extensions
         {
             var builder = BuildPathWithId(client, path, id);
             output.WriteLine($"METHOD GET, url:'{builder.Uri.PathAndQuery}'");
-            return await WriteApiError(await client.GetAsync(builder.Path, output, dto), output);
+            return await WriteApiErrorAsync(await client.GetAsync(builder.Path, output, dto), output);
         }
 
         public static async Task<HttpResponseMessage> GetAsync(
@@ -52,7 +58,7 @@ namespace AllInOne.Integration.Tests.Extensions
                 builder.Query = dto.ToQueryString();
             }
             output.WriteLine($"METHOD GET, url:'{builder.Uri.PathAndQuery}'");
-            return await WriteApiError(await client.GetAsync(builder.Uri.PathAndQuery), output);
+            return await WriteApiErrorAsync(await client.GetAsync(builder.Uri.PathAndQuery), output);
         }
 
         public static async Task<HttpResponseMessage> PostAsync(
@@ -64,7 +70,7 @@ namespace AllInOne.Integration.Tests.Extensions
         {
             var builder = BuildPath(client, path);
             output.WriteLine($"METHOD POST, url:'{builder.Uri.PathAndQuery}' dto:'{dto.ToJson()}'");
-            return await WriteApiError(await client.PostAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
+            return await WriteApiErrorAsync(await client.PostAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
         }
 
         public static async Task<HttpResponseMessage> PutByIdAsync<TPrimaryKey>(
@@ -77,7 +83,7 @@ namespace AllInOne.Integration.Tests.Extensions
         {
             var builder = BuildPathWithEntity(client, path, id);
             output.WriteLine($"METHOD PUT, url:'{builder.Uri.PathAndQuery}' dto:'{dto.ToJson()}'");
-            return await WriteApiError(await client.PutAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
+            return await WriteApiErrorAsync(await client.PutAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
         }
 
         public static async Task<HttpResponseMessage> PutByIdAsync<TPrimaryKey>(
@@ -89,7 +95,7 @@ namespace AllInOne.Integration.Tests.Extensions
         {
             var builder = BuildPathWithEntity(client, path, dto);
             output.WriteLine($"METHOD PUT, url:'{builder.Uri.PathAndQuery}' dto:'{dto.ToJson()}'");
-            return await WriteApiError(await client.PutAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
+            return await WriteApiErrorAsync(await client.PutAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
         }
 
         public static async Task<HttpResponseMessage> PutAsync(
@@ -100,19 +106,24 @@ namespace AllInOne.Integration.Tests.Extensions
         {
             var builder = BuildPath(client, path);
             output.WriteLine($"METHOD PUT, url:'{builder.Uri.PathAndQuery}'");
-            return await WriteApiError(await client.PutAsync(builder.Uri.PathAndQuery, null), output);
+            return await WriteApiErrorAsync(await client.PutAsync(builder.Uri.PathAndQuery, null), output);
         }
 
         public static async Task<HttpResponseMessage> PutAsync<T>(
             this HttpClient client,
             string path,
             ITestOutputHelper output,
-            T dto
+            T dto,
+            Format format = Format.Json
         )
         {
             var builder = BuildPath(client, path);
             output.WriteLine($"METHOD PUT, url:'{builder.Uri.PathAndQuery}' dto:'{dto.ToJson()}'");
-            return await WriteApiError(await client.PutAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
+            if (format == Format.Json)
+            {
+                return await WriteApiErrorAsync(await client.PutAsync(builder.Uri.PathAndQuery, dto.ToStringContent()), output);
+            }
+            return await WriteApiErrorAsync(await client.PutAsync(builder.Uri.PathAndQuery, dto.ToFormData()), output);
         }
 
         public static async Task<HttpResponseMessage> DeleteAsync<TPrimaryKey>(
@@ -124,7 +135,7 @@ namespace AllInOne.Integration.Tests.Extensions
         {
             var builder = BuildPathWithEntity(client, path, dto);
             output.WriteLine($"METHOD DELETE, url:'{builder.Uri.PathAndQuery}'");
-            return await WriteApiError(await client.DeleteAsync(builder.Uri.PathAndQuery), output);
+            return await WriteApiErrorAsync(await client.DeleteAsync(builder.Uri.PathAndQuery), output);
         }
 
         public static async Task<HttpResponseMessage> DeleteAsync(
@@ -135,11 +146,11 @@ namespace AllInOne.Integration.Tests.Extensions
         {
             var builder = BuildPath(client, path);
             output.WriteLine($"METHOD DELETE, url:'{builder.Uri.PathAndQuery}'");
-            return await WriteApiError(await client.DeleteAsync(builder.Uri.PathAndQuery), output);
+            return await WriteApiErrorAsync(await client.DeleteAsync(builder.Uri.PathAndQuery), output);
         }
 
         #region Private
-        private static async Task<HttpResponseMessage> WriteApiError(HttpResponseMessage response, ITestOutputHelper output)
+        private static async Task<HttpResponseMessage> WriteApiErrorAsync(HttpResponseMessage response, ITestOutputHelper output)
         {
             if (response.StatusCode != HttpStatusCode.OK)
             {

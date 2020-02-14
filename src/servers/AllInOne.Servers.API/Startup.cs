@@ -5,6 +5,8 @@ using AllInOne.Common.Settings.Extensions;
 using AllInOne.Common.Settings.HealthChecks;
 using AllInOne.Common.Smtp.Configuration;
 using AllInOne.Common.Smtp.HealthChecks;
+using AllInOne.Common.Storage.Configuration;
+using AllInOne.Common.Storage.HealthChecks;
 using AllInOne.Domains.Core.Identity.Configuration;
 using AllInOne.Domains.Core.Identity.Entities;
 using AllInOne.Domains.Infrastructure.SqlServer;
@@ -55,8 +57,9 @@ namespace AllInOne.Servers.API
             // Settings
             services
                 .AddOptions()
-                .ConfigureAndValidate<IdentitySettings>(Configuration)
-                .Configure<SmtpSettings>(Configuration.GetSection("Smtp"));
+                .ConfigureAndValidate<IdentitySettings>(Configuration) //If settings are not valid, the server does not launch
+                .Configure<SmtpSettings>(Configuration.GetSection("Smtp"))
+                .Configure<AzureStorageSettings>(Configuration.GetSection("AzureStorage"));
 
             // Dependancy Injection
             services.AddAutofac();
@@ -144,7 +147,9 @@ namespace AllInOne.Servers.API
             });
             services.AddHealthChecks()
                 .AddCheck<SmtpHealthCheck>("SMTP")
-                .AddCheckSettings<IdentitySettings>()
+                .AddCheck<AzureStorageHealthCheck>("AzureStorage")
+                .AddCheckSettings<IdentitySettings>() //new way to validate settings
+                .AddCheckSettings<AzureStorageSettings>()
                 .AddDbContextCheck<AllInOneDbContext>("Default");
 
             // Profiling

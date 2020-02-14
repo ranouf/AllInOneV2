@@ -16,7 +16,7 @@ namespace AllInOne.Common.Smtp.HealthChecks
 
         public SmtpHealthCheck(
             [NotNull]ISmtpClientFactory smtpClientFactory,
-            IOptions<SmtpSettings> options
+            [NotNull]IOptions<SmtpSettings> options
         ): base(options)
         {
             _smtpClientFactory = smtpClientFactory;

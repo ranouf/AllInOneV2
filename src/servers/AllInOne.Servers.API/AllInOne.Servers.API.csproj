@@ -51,6 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\common\AllInOne.Common.Authentication\AllInOne.Common.Authentication.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common.Settings\AllInOne.Common.Settings.csproj" />
+    <ProjectReference Include="..\..\common\AllInOne.Common.Storage\AllInOne.Common.Storage.csproj" />
     <ProjectReference Include="..\..\common\AllInOne.Common\AllInOne.Common.csproj" />
     <ProjectReference Include="..\..\domains\AllInOne.Domains.Infrastructure\AllInOne.Domains.Infrastructure.csproj" />
   </ItemGroup>

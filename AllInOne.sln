@@ -77,6 +77,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllInOne.Common.Events", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllInOne.Common.Smtp", "src\common\AllInOne.Common.Smtp\AllInOne.Common.Smtp.csproj", "{FDFA66C5-BC9F-41AA-8366-4479F5DD1821}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllInOne.Common.Storage", "src\common\AllInOne.Common.Storage\AllInOne.Common.Storage.csproj", "{58853AA8-885A-455E-8BC5-FA3612AD33D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +153,10 @@ Global
 		{FDFA66C5-BC9F-41AA-8366-4479F5DD1821}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDFA66C5-BC9F-41AA-8366-4479F5DD1821}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDFA66C5-BC9F-41AA-8366-4479F5DD1821}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58853AA8-885A-455E-8BC5-FA3612AD33D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58853AA8-885A-455E-8BC5-FA3612AD33D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58853AA8-885A-455E-8BC5-FA3612AD33D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58853AA8-885A-455E-8BC5-FA3612AD33D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -179,6 +185,7 @@ Global
 		{015877A1-7787-4AB3-868C-F87B4BA09C53} = {4151DC89-8A22-494A-8572-01F64CCF81A6}
 		{68E96EF0-8545-4EFD-B48B-DD17CA419AF4} = {6847109B-497A-4851-975E-537202270341}
 		{FDFA66C5-BC9F-41AA-8366-4479F5DD1821} = {6847109B-497A-4851-975E-537202270341}
+		{58853AA8-885A-455E-8BC5-FA3612AD33D0} = {6847109B-497A-4851-975E-537202270341}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9BBA737-4F31-47E0-8B2C-329BF827DF2C}

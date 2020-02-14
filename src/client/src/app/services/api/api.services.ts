@@ -98,11 +98,17 @@ export class AccountService extends ServiceBase {
         return _observableOf<void>(<any>null);
     }
 
-    updateProfile(dto: ChangeProfileRequestDto): Observable<UserDto> {
+    updateProfile(firstname: string | null | undefined, lastname: string | null | undefined, profileImage: FileParameter | null | undefined): Observable<UserDto> {
         let url_ = this.baseUrl + "/api/v1/account/profile";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(dto);
+        const content_ = new FormData();
+        if (firstname !== null && firstname !== undefined)
+            content_.append("Firstname", firstname.toString());
+        if (lastname !== null && lastname !== undefined)
+            content_.append("Lastname", lastname.toString());
+        if (profileImage !== null && profileImage !== undefined)
+            content_.append("ProfileImage", profileImage.data, profileImage.fileName ? profileImage.fileName : "ProfileImage");
 
         let options_ : any = {
             body: content_,
@@ -110,7 +116,6 @@ export class AccountService extends ServiceBase {
             responseType: "blob",			
             withCredentials: true,		
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
                 "Accept": "application/json"
             })
         };
@@ -1272,6 +1277,7 @@ export interface EntityDtoOfNullableGuid {
 export interface UserDto extends EntityDtoOfNullableGuid {
     firstname?: string | undefined;
     lastname?: string | undefined;
+    profileImageUrl?: string | undefined;
     fullName?: string | undefined;
     email?: string | undefined;
     description?: string | undefined;
@@ -1284,11 +1290,6 @@ export interface UserDto extends EntityDtoOfNullableGuid {
     updatedAt?: string | undefined;
     deletedAt?: string | undefined;
     invitedBy?: string | undefined;
-}
-
-export interface ChangeProfileRequestDto {
-    firstname: string;
-    lastname: string;
 }
 
 export interface RegistrationRequestDto {
@@ -1357,6 +1358,11 @@ export interface UpdateUserRequestDto {
     lastname: string;
     description?: string | undefined;
     roleId: string;
+}
+
+export interface FileParameter {
+    data: any;
+    fileName: string;
 }
 
 export class ApiException extends Error {

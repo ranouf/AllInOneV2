@@ -1,0 +1,31 @@
+.profileImage {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border: 1px solid #EFEFEF;
+  max-width: 280px;
+
+  .actions {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    transform: translateX(-50%);
+  }
+
+  &:hover .actions {
+    display: flex;
+  }
+
+  > mat-icon {
+    font-size: 20em;
+  }
+
+  img {
+    width: 280px;
+    height: 280px;
+    object-fit: cover;
+  }
+}
