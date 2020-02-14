@@ -9,5 +9,6 @@ namespace AllInOne.Common.Storage
         Task CreateIfNotExistsAsync();
         Task<Uri> SaveFileAsync(Stream stream, string fileName);
         Task RemoveFileAsync(string fileName);
+        Task DeleteAsync();
     }
 }

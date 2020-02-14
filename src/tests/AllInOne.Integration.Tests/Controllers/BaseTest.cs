@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -7,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace AllInOne.Integration.Tests.Controllers
 {
-    public class BaseTest
+    public class BaseTest : IDisposable
     {
         public ITestOutputHelper Output { get; private set; }
         public TestServerFixture TestServerFixture { get; private set; }
@@ -46,6 +47,20 @@ namespace AllInOne.Integration.Tests.Controllers
             Output = output;
             TestServerFixture = new TestServerFixture(Output);
             Client = TestServerFixture.Client;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                TestServerFixture.Dispose();
+            }
         }
     }
 }

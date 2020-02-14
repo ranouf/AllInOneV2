@@ -1,5 +1,5 @@
-﻿using AllInOne.Common.Storage.BlobContainerClients;
-using AllInOne.Common.Storage.Configuration;
+﻿using AllInOne.Common.Storage.Configuration;
+using Azure.Storage.Blobs;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using System;
@@ -11,15 +11,12 @@ namespace AllInOne.Common.Storage.HealthChecks
 {
     public class AzureStorageHealthCheck : IHealthCheck
     {
-        private readonly IBlobContainerClientFactory _blobContainerClientFactory;
         private readonly AzureStorageSettings _azureSettings;
 
         public AzureStorageHealthCheck(
-            [NotNull]IBlobContainerClientFactory blobContainerClientFactory,
             [NotNull]IOptions<AzureStorageSettings> azureSettings
         )
         {
-            _blobContainerClientFactory = blobContainerClientFactory;
             _azureSettings = azureSettings.Value;
         }
 
@@ -27,11 +24,7 @@ namespace AllInOne.Common.Storage.HealthChecks
         {
             try
             {
-
-                var client = _blobContainerClientFactory.CreateBlobContainerClient(
-                    _azureSettings.ConnectionString,
-                    _azureSettings.Container
-                );
+                var client = new BlobContainerClient(_azureSettings.ConnectionString, _azureSettings.Container);
 
                 var properties = await client.GetPropertiesAsync(
                    cancellationToken: cancellationToken

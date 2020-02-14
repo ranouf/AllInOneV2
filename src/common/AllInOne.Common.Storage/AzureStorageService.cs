@@ -1,6 +1,6 @@
 ﻿using AllInOne.Common.Logging;
-using AllInOne.Common.Storage.BlobContainerClients;
 using AllInOne.Common.Storage.Configuration;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Options;
 using System;
@@ -13,33 +13,27 @@ namespace AllInOne.Common.Storage
 {
     public class AzureStorageService : IStorageService
     {
-        private readonly IBlobContainerClientFactory _blobContainerClientFactory;
         private readonly AzureStorageSettings _azureSettings;
         private readonly ILoggerService<AzureStorageService> _logger;
 
-        private IBlobContainerClient _blobContainerClient;
-        private IBlobContainerClient Client
+        private BlobContainerClient _blobContainerClient;
+        private BlobContainerClient Client
         {
             get
             {
                 if (_blobContainerClient == null)
                 {
-                    _blobContainerClient = _blobContainerClientFactory.CreateBlobContainerClient(
-                        _azureSettings.ConnectionString,
-                        _azureSettings.Container
-                    );
+                    _blobContainerClient = new BlobContainerClient(_azureSettings.ConnectionString, _azureSettings.Container);
                 }
                 return _blobContainerClient;
             }
         }
 
         public AzureStorageService(
-            [NotNull]IBlobContainerClientFactory blobContainerClientFactory,
             [NotNull]IOptions<AzureStorageSettings> azureSettings,
             ILoggerService<AzureStorageService> logger
         )
         {
-            _blobContainerClientFactory = blobContainerClientFactory;
             _azureSettings = azureSettings.Value;
             _logger = logger;
         }
@@ -51,6 +45,12 @@ namespace AllInOne.Common.Storage
                 await Client.CreateAsync(PublicAccessType.Blob);
                 _logger.LogInformation($"BlobContainer '{_azureSettings.Container}' has been created.");
             }
+        }
+
+        public async Task DeleteAsync()
+        {
+            await Client.DeleteAsync();
+            _logger.LogInformation($"BlobContainer '{_azureSettings.Container}' has been deleted.");
         }
 
         public async Task<Uri> SaveFileAsync(Stream stream, string fileName)

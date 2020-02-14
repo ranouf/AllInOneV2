@@ -1,6 +1,4 @@
-﻿using AllInOne.Common.Storage;
-using AllInOne.Common.Storage.BlobContainerClients;
-using Autofac;
+﻿using Autofac;
 
 namespace AllInOne.Common.Storage
 {
@@ -9,7 +7,6 @@ namespace AllInOne.Common.Storage
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<AzureStorageService>().As<IStorageService>();
-            builder.RegisterType<BlobContainerClientFactory>().As<IBlobContainerClientFactory>();
         }
     }
 }

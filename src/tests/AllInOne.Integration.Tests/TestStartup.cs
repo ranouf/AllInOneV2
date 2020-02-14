@@ -1,5 +1,4 @@
 ﻿using AllInOne.Common.Smtp.SmtpClients;
-using AllInOne.Common.Storage.BlobContainerClients;
 using AllInOne.Domains.Infrastructure.SqlServer;
 using AllInOne.Servers.API;
 using Autofac;
@@ -29,7 +28,6 @@ namespace AllInOne.Integration.Tests
         {
             base.ConfigureContainer(builder); 
             builder.RegisterType<MockSmtpClientFactory>().As<ISmtpClientFactory>();
-            builder.RegisterType<MockBlobContainerClientFactory>().As<IBlobContainerClientFactory>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using AllInOne.Integration.Tests.Data;
+﻿using AllInOne.Common.Storage;
+using AllInOne.Integration.Tests.Data;
 using AllInOne.Integration.Tests.Extensions;
 using AllInOne.Integration.Tests.InMemory;
 using AllInOne.Integration.Tests.ObservableConfiguration;
@@ -18,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace AllInOne.Integration.Tests
@@ -78,6 +80,9 @@ namespace AllInOne.Integration.Tests
             {
                 var services = scope.ServiceProvider;
                 TestDbInitializer.Seed(services, Output);
+
+                var storageService = services.GetRequiredService<IStorageService>();
+                Task.Run(async () => await storageService.CreateIfNotExistsAsync());
             }
         }
 
@@ -100,6 +105,9 @@ namespace AllInOne.Integration.Tests
         {
             if (disposing)
             {
+                var storageService = Server.Services.GetRequiredService<IStorageService>();
+                Task.Run(async () => await storageService.DeleteAsync()); ;
+
                 Client.Dispose();
                 Server.Dispose();
                 Host.Dispose();
